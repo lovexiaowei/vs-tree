@@ -19,8 +19,8 @@
     var id = 1000
     function add(parentId, name) {
       const list = []
-      for (var i = 0; i < 10; i++) {
-        list.push({ id: '100' + id++, name: name + i, parentId: parentId })
+      for (var i = 0; i < 10000; i++) {
+        list.push({ id: '100' + id++, name: name+i, parentId: parentId })
       }
       return list
     }
@@ -38,19 +38,21 @@
       { id: '110', name: 'oo-8', parentId: '1' },
       { id: '111', name: 'oo-9', parentId: '1' },
     ]
-    console.timeEnd('create:data')
-    console.time('render:tree');
+    // console.timeEnd('create:data')
+    // console.time('render:tree');
     const tree = new vsTree.default('#tree', {
       data: data,
       showCheckbox: true,
       // rootName: '根节点'
     });
-    console.timeEnd('render:tree');
-
+    // console.timeEnd('render:tree');
     document.getElementById("checked").onclick = function () {
       console.log(tree);
       console.log(tree.getCheckedNodes());
     }
+
+    var a=tree.getNodeById('100');
+    var b=tree.getNodeById('1001001');
   </script>
 </body>
 

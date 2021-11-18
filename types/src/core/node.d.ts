@@ -52,5 +52,7 @@ export default class Node {
     loadData(callback: any): void;
     loading: boolean | undefined;
     remove(): void;
+    setTitle(title: any): void;
     append(data: any): void;
+    unshift(data: any): void;
 }

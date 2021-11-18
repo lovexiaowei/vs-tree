@@ -1,358 +1,317 @@
-# vs-tree2.0
+# Bigemap离线地图发布服务器 for Linux
+当前版本：v0.2.7
 
-极简树组件, 无任何依赖【麻雀虽小，五脏俱全】
+一站式搭建离线地图服务器，支持多种地图离线发布；提供快速WEB应用、WMTS、TMS等服务；支持二次开发调用；
 
-## 浏览器支持
+## [系统要求](#system-require) {#system-require}
+Bigemap Server 支持以下操作系统：
+* Windows 7, Windows Server 2008及以上\*
+* CentOS 6
+* CentOS 7
+* Ubuntu 14.04
+* Ubuntu 16.04
 
-| ![Edge](https://raw.github.com/alrra/browser-logos/master/src/edge/edge_48x48.png) | ![Chrome](https://raw.github.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/src/opera/opera_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/src/safari/safari_48x48.png) |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Latest ✔                                                                           | Latest ✔                                                                                 | Latest ✔                                                                                    | Latest ✔                                                                              | Latest ✔                                                                                 |
+\* 部署到 **Windows** 系统直接下载[安装程序](http://www.bigemap.com/reader/download/detail201802017.html)。部署到 **Linux** 系统按照以下步骤。
 
-## 功能点
+## [安装依赖项](#install-deps) {#install-deps}
+在安装Bigemap Server之前，需要安装一下依赖项：
+* Wget
+* OpenSSL (optional)
+* Docker
+* Docker Compose
+* unzip
 
-* [x] 基础树组件
-* [x] 层级面包屑
-* [x] 复选框
-* [x] 单选框
-* [x] 异步加载数据
-* [x] 虚拟列表
-* [x] 拖拽节点
-* [x] 手风琴
-* [x] 树内搜索
-* [x] 自定义图标
-* [x] 连接线
-* [x] 最大可选
-* [x] 节点右键事件
-* [x] 自定义格式化数据
-* [x] 支持Vue组件
+Wget、OpenSSL及unzip都是Bigemap Server安装脚本所需，Docker和Docker Compose是服务运行、集成容器。
 
-## DEMO
+### [CentOS 7](#centos-7-install-deps) {#centos-7-install-deps}
+```bash
+# Most of these commands need to be run by the root user
+$ sudo su
 
-[跳转到DEMO](https://yangjingyu.github.io/vs-tree/public/index.html)
+$ yum check-update
+$ yum install -y epel-release
+$ yum install -y wget openssl python-pip unzip
 
-## 安装
+# Install Docker
+$ curl -fsSL https://get.docker.com/ | sh
 
-```shell
-npm install vs-tree
+# Add your user to the Docker group. i.e. centos
+$ usermod -aG docker <your-user-name>
+
+# Enable the Docker daemon to start at system boot
+$ systemctl enable docker.service
+
+# Start the Docker daemon
+$ systemctl start docker.service
+
+# Install Docker Compose
+$ pip install docker-compose
 ```
 
-或
+### [Ubuntu 14.04](#ubuntu-14-install-deps) {#ubuntu-14-install-deps}
+```bash
+# Update the package database
+$ sudo apt-get update
 
-```shell
-yarn add vs-tree
+# Install Docker and Server dependencies
+$ sudo apt-get install \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common \
+    docker-ce \
+    wget \
+    openssl \
+    unzip
+
+# Add the Docker repository to APT sources
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+# Update the package database with the Docker packages
+$ sudo apt-get update
+
+# Install Docker
+$ sudo apt-get install -y docker-ce
+
+# Add your user to the Docker group. i.e. ubuntu
+$ sudo usermod -aG docker <your-user-name>
+
+# Check the current release and, if necessary, update it in the command below
+$ sudo curl -L \
+    https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` \
+    -o /usr/local/bin/docker-compose
+
+# Set execute permissions on docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-## use
+### [Ubuntu 16.04](#ubuntu-16-install-deps) {#ubuntu-16-install-deps}
+```bash
+# Update the package database
+$ sudo apt-get update
 
-```html
-<div id="tree"></div>
+# Install Docker and Server dependencies
+$ sudo apt-get install -y wget openssl unzip
+
+# Add the Docker repository to APT sources
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+# Update the package database with the Docker packages
+$ sudo apt-get update
+
+# Make sure you are about to install from the Docker repo
+$ sudo apt-cache policy docker-ce
+
+# Install Docker
+$ sudo apt-get install -y docker-ce
+
+# Add your user to the docker group. i.e. ubuntu
+$ sudo usermod -aG docker <your-user-name>
+
+# Check the current release and, if necessary, update it in the command below
+$ sudo curl -L \
+    https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` \
+    -o /usr/local/bin/docker-compose
+
+# Set execute permissions on docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-```js
-import vsTree from 'vs-tree'
-import 'vs-tree/dist/vs-tree.css'
+### [银河麒麟 Kyline 4.0.2 server sp2](#kyline-402-install-deps) {#kyline-402-install-deps}
+```bash
+# Update the package database
+$ sudo apt-get update
 
-const tree = new vsTree('#tree', {
-  data: {id: 1, name: 'tree1', children: []} // [{id, name}, {id, name, children}]
-});
+# Install Docker and Server dependencies
+$ sudo apt-get install -y wget openssl unzip
+
+# Install Docker
+$ curl -fsSL https://get.docker.com/ | sh
+
+# Add your user to the docker group. i.e. ubuntu
+$ sudo usermod -aG docker <your-user-name>
+
+# Enable the Docker daemon to start at system boot
+$ sudo systemctl enable docker
+
+# Start the Docker daemon
+$ sudo systemctl start docker
+
+# Check the current release and, if necessary, update it in the command below
+$ sudo curl -L \
+    https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` \
+    -o /usr/local/bin/docker-compose
+
+# Set execute permissions on docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
----
+***
+## [安装 Bigemap Server](#install-bm-server) {#install-bm-server}
+### Bigemap Server Installer
+Bigemap Server installer是命令行脚本(CLI)程序用于下载、安装Bigemap Server。
 
-直接引入js
+### [安装命令](#bm-server-installer-commands) {#bm-server-installer-commands}
+命令 | 需要联网 | 描述
+-------------------- | ---------- | -------------------------------
+`install`  | 是 | 自动下载并安装Bigemap Server
+`download` | 是 | 下载Bigemap Server
+`setup`    | 否 | 安装Bigemap Server
+`list`     | 是 | 查看发布的历史版本
+`remove`   | 否 | 卸载Bigemap Server
 
-```html
-<link rel="stylesheet" href="../dist/vs-tree.css">
-<div id="tree"></div>
-<script src="../dist/vs-tree.js"></script>
+### [下载 Installer](#download-installer) {#download-installer}
+1. 下载安装脚本：`wget http://downloads.bigemap.com/bm-server/linux/bm-server-installer.zip` ([点击下载](http://downloads.bigemap.com/bm-server/linux/bm-server-installer.zip))
+1. 解压下载的zip文件: `unzip bm-server-installer.zip`
+1. 修改执行权限：`chmod +x ./bm-server-installer`
+1. 查看命令帮助：`./bm-server-installer help`
+
+### [一步安装](#one-step-installation) {#one-step-installation}
+一步安装将自动下载并安装最新发布本版，需本机联网部署。
+```bash
+# Install Bigemap server, 'bm-server/' is the installation path.
+$ sudo ./bm-server-installer install bm-server/
+
+# Enter installation path
+$ cd bm-server
+
+# Start Bigemap server
+$ ./bm-server.sh start
+```
+### [服务管理](#bm-server-commands) {#bm-server-commands}
+
+```bash
+# Restart Bigemap server
+$ ./bm-server.sh restart
+
+# Stop Bigemap server
+$ ./bm-server.sh stop
+
+# Show logs
+$ ./bm-server.sh logs
 ```
 
-```js
-const tree = new vsTree.default('#tree', {
-  data: {id: 1, name: 'tree1', children: []} // [{id, name}, {id, name, children}]
-});
+### [离线安装](#offline-installation) {#offline-installation}
+离线部署首先需手动下载并[安装依赖项](#install-deps)，才进行此离线安装步骤。按以下步骤进行，首先下载所需文件，然后将`bm-server-installer`以及下载目录`bm-server-files`一并拷贝到离线服务器上，最后执行`setup`命令安装。
+#### [下载Bigemap Server](#download-command) {#download-command}
+`download`命令将Bigemap Server所需文件下载一个指定目录，后续将在`setup`命令中使用。
+```bash
+# Download Bigemap Server, 'bm-server-files/' is the directory where the downloaded files will be saved。
+$ ./bm-server-installer download bm-server-files/
+```
+##### 选项
+* `--version`      (可选) 下载Bigemap Server指定的版本，可通过`list`命令[查看可用版本](#list-command)
+
+#### [安装Bigemap Server](#setup-command) {#setup-command}
+在将运行Bigemap Server的服务器上执行`setup`命令。其中参数`bm-server-files/`是`download`命令下载所需的文件；参数`bm-server/`是目标安装目录。
+```bash
+$ ./bm-server-installer setup bm-server-files/ bm-server/
+```
+安装完成后，执行`bm-server.sh`启动服务：
+```bash
+$ (cd bm-server && ./bm-server.sh start)
 ```
 
----
-
-支持浏览器模块
-
-```html
-<script type="module">
-import vsTree from '../dist/vs-tree.esm.browser.js'
-const tree = new vsTree('#tree', {
-  data: {id: 1, name: 'tree1', children: []} // [{id, name}, {id, name, children}]
-});
-</script>
+### [查看可用版本](#list-command) {#list-command}
+`list`命令列出了所有可下载的Bigemap Server版本。
+通过`bm-server.sh`查看当前安装的版本：
+```bash
+$ ./bm-server.sh version
+```
+查看所有可下载版本：
+```bash
+$ ./bm-server-installer list
+```
+通过`download`命令并指定`--version`参数下载指定的Bigemap Server版本。
+```bash
+$ ./bm-server-installer download bm-server-files/ --version <bm-server-version>
 ```
 
-## Vue2.x use
-
-```js
-// main.js
-import { install } from 'vs-tree'
-import 'vs-tree/dist/vs-tree.css'
-
-Vue.use(install)
-```
-
-```html
-<template>
-  <div id="app">
-    <vs-tree :data="data"></vs-tree>
-  </div>
-</template>
-
-<script>
-var id = 1000
-function add(parentId, name) {
-  const list = []
-  for (var i = 0; i < 10; i++) {
-    list.push({ id: '100' + id++, name: name + i, parentId: parentId })
-  }
-  return list
-}
-const data = {
-  id: '1', name: 'zhangsan', parentId: '-1', children: [
-    { id: '100', name: 'wangwu', parentId: '1', children: add('100', 'wangwu') },
-    { id: '101', name: 'zhaoliu', parentId: '1', children: add('101', 'zhaoliu') },
-    { id: '102', name: 'huahua', parentId: '1' },
-    { id: '103', name: 'oo-1', parentId: '1' },
-    { id: '104', name: 'oo-2', parentId: '1' },
-    { id: '105', name: 'oo-3', parentId: '1' },
-    { id: '106', name: 'oo-4', parentId: '1' },
-    { id: '107', name: 'oo-5', parentId: '1' },
-    { id: '108', name: 'oo-6', parentId: '1' },
-    { id: '109', name: 'oo-7', parentId: '1' },
-    { id: '110', name: 'oo-8', parentId: '1' },
-    { id: '111', name: 'oo-9', parentId: '1' },
-  ]
-}
-export default {
-  name: 'App',
-  data () {
-    return {
-      data: data
-    }
-  },
-
-}
-</script>
-```
-
-### Options
-
-| Input            | Desc                                                 | Type                  | Default             |
-| ---------------- | ---------------------------------------------------- | --------------------- | ------------------- |
-| el               | 选择器, 或 HTMLElement                               | string 或 HTMLElement |                     |
-| data             | 展示数据                                             | Object、 Array        |                     |
-| async            | 延时渲染                                             | Boolean               | false               |
-| hideRoot         | 是否展示根节点                                       | Boolean               | false               |
-| showLine         | 是否展示连接线                                       | Boolean               | false               |
-| showIcon         | 是否显示图标                                         | Boolean               | false               |
-| onlyShowLeafIcon | 是否仅显示叶子节点图标                               | Boolean               | false               |
-| showCheckbox     | 是否显示复选框                                       | Boolean               | false               |
-| checkboxType     | 父子节点关联关系                                     | Object                | checkboxTypeOptions |
-| checkInherit     | 新加入节点时自动继承父节点选中状态                   | Boolean               | false               |
-| showRadio        | 是否显示单选框，会覆盖复选框                         | Boolean               | false               |
-| radioType        | 分组范围                                             | String                | 'all'               |
-| disabledInherit  | 新加入节点时自动继承父节点禁用状态                   | Boolean               | false               |
-| highlightCurrent | 是否高亮选中当前项                                   | Boolean               | false               |
-| accordion        | 手风琴模式                                           | Boolean               | false               |
-| animation        | 开启动画                                             | Boolean               | false               |
-| draggable        | 开启拖拽                                             | Boolean               | false               |
-| dropable         | 允许放置                                             | Boolean               | false               |
-| nocheckParent    | 禁止父节点选中                                       | Boolean               | false               |
-| sort             | 对选中列表排序                                       | Boolean               | false               |
-| checkOnClickNode | 是否在点击节点的时候选中节点                         | Boolean               | false               |
-| lazy             | 异步加载节点                                         | Boolean               | false               |
-| strictLeaf       | 严格依赖isLeaf，不提供时如无子节点则不渲染展开图标   | Boolean               | false               |
-| max              | 最大可选数量                                         | Number                | 0                   |
-| checkFilterLeaf  | 选中结果过滤掉叶子节点， 异步加载时需手需提供 isLeaf | Boolean               | false               |
-| rootName         | 根节点名称，仅 data 为数组时有效，此时不会默认       | String                | null                |
-| expandClass      | 展开收起图标class                                    | String                | vs-expand-icon      |
-| theme            | 皮肤风格,仅支持 'element'                            | String                | null                |
-| breadcrumb       | 面包屑功能，只展示一层节点                           | Object                | null                |
-| disabledKeys     | 禁止操作                                             | Array                 | null                |
-| checkedKeys      | 默认选中                                             | Array                 | null                |
-| expandKeys       | 默认展开                                             | Array                 | null                |
-| expandLevel      | 默认展开级数, 0 不展开 -1 全部展开                   | Number                | 1                   |
-| indent           | 缩进                                                 | Number                | 10                  |
-| virtual          | 虚拟列表配置信息                                     | Object                | virtualOptions      |
-| maxHeight        | 组件最大高度                                         | String、Number        | 400px               |
-| minHeight        | 组件最大高度                                         | String、Number        | 0px               |
-
-### checkboxTypeOptions
-
-| options | Desc         | 默认 |
-| ------- | ------------ | ---- |
-| Y       | 勾选后情况   | 'ps' |
-| N       | 取消勾选情况 | 'ps' |
-
-> p 表示操作影响父节点
-> s 表示操作影响子节点
-
-### radioType
-
-> all 表示全局范围内分组
-> level 表示每级节点内分组
-
-### virtualOptions
-
-| options    | Desc                 | 默认 |
-| ---------- | -------------------- | ---- |
-| showCount  | 试图内展示多少条数据 | 30   |
-| itemHeight | 每条的高度           | 26   |
-
-### breadcrumb
-
-
-| options   | Desc                      | 默认                 |
-| --------- | ------------------------- | -------------------- |
-| el        | Selector, HtmlElement     | 内部创建根节点       |
-| icon      | string, ELement, Function | null                 |
-| link      | string, ELement, Function | null                 |
-| separator | string, ELement, Function | null                 |
-| change    | Event                     | dom, node[], current |
-
-### 方法
-
-`Tree` 内部使用了 Node 类型的对象来包装用户传入的数据，用来保存目前节点的状态。
-`Tree` 拥有如下方法：
-
-| Methods         | 说明                   | 参数                    |
-| --------------- | ---------------------- | ----------------------- |
-| getCheckedNodes | 获取选中节点           | -                       |
-| getNodeById     | 根据 ID 获取 Node 节点 | id                      |
-| setMaxValue     | 设置最大可选           | number                  |
-| scrollToIndex   | 滚动到索引位置         | number                  |
-| filter          | 过滤节点               | keyword, onlySearchLeaf |
-
-> onlySearchLeaf 只过滤叶子节点
-
-### Node 方法
-
-`Node` 拥有如下方法：
-
-| Methods     | 说明         | 参数       |
-| ----------- | ------------ | ---------- |
-| setChecked  | 设置是否选中 | true,false |
-| setDisabled | 设置禁止操作 | true,false |
-| remove      | 删除当前节点 | -          |
-| append      | 追加节点     | data       |
-
-### Events
-
-| 事件名称      | 说明                   | 回调参数            | 返回值                      |
-| ------------- | ---------------------- | ------------------- | --------------------------- |
-| click         | 节点点击事件           | event, node         | void                        |
-| beforeCheck   | 节点选择前触发         | node                | true,false                  |
-| check         | 复选框被点击时触发     | event, node         | void                        |
-| change        | 复选框改变时触发       | node                | void                        |
-| limitAlert    | 超过 max 配置时触发    | -                   | void                        |
-| renderContent | 自定义节点内容         | h,node              | h() 或 Dom                  |
-| load          | lazy=true 时有效       | node, resolve       | void                        |
-| checkFilter   | 过滤掉的节点不计入统计 | node                | true, false                 |
-| format        | 格式化数据             | data                | {name,children,isLeaf,icon} |
-| contextmenu   | 鼠标右键事件           | event, node         | void                        |
-| searchFilter  | 搜索过滤               | keyword, node, data | node[]                      |
-| searchRender  | 搜索渲染               | node, cloneNode     | Element                     |
-| onDragstart   | 开始拖拽               | e, node             | void                        |
-| onDragenter   | 进入放置目标           | e, node, dragPos    | void                        |
-| onDrop        | 放置目标               | e, node, dragPos    | void                        |
-
-> searchRender 返回的 Element 不会影响原有dom
-
-#### renderContent
-
-h: 生成简单 dom 节点，当前仅支持以下配置
-
-```js
-renderContent: function (h, node) {
-  return h("div", {
-    className: "tree-action",
-    children: [
-      h("a", {
-        text: 'append',
-        click: function (e, node) {
-          node.append({
-            id: id++,
-            name: 'append'
-          })
-        }
-      }),
-      h("a", {
-        text: 'remove',
-        click: function (e, node) {
-          node.remove()
-        }
-      })
-    ]
-  })
-}
-```
-或
-
-```js
-renderContent: function(h, node) {
-  const append = document.createElement('a')
-  append.innerText = 'append'
-  dom.appendChild(append)
-  append.onclick = () => {
-    node.append({
-      id: id++,
-      name: 'append'
-    })
-  }
-  return append
+***
+## [配置 Bigemap Server](#bm-server-settings) {#bm-server-settings}
+Bigemap Server采用JSON文件配置，默认配置文件在`bm-server-installer`目录中。Linux默认配置如下：
+```json
+{
+  "Hostname": "localhost",
+  "Port": 3000,
+  "ServicePort": 3001,
+  "Password": "password",
+  "TilesetPath": "./tilesets"
 }
 ```
 
-### load
+### [配置选项](#settings-options) {#settings-options}
+1. `Hostname`服务主机名。
+1. `Port`服务端口，默认3000。
+1. `ServicePort`地图瓦片服务端口，默认3001；与服务端口不能相同。
+1. `Password`登录服务管理密码，远程访问服务管理需登录，**建议修改密码**。
+1. `TilesetPath`地图瓦片服务根目录，添加离线地图服务可浏览该目录下文件。
 
-resolve 异步加载完成后回调
+### [配置命令](#settings-command) {#settings-command}
+修改配置文件后，通过`settings`命令应用配置。
+```bash
+$ ./bm-server-installer settings <target> --config <path to JSON file>
+```
+##### 参数
+* `<target>`目标安装目录，例如`bm-server/`。
+* `--config`配置文件路径。
 
-```js
-lazy: true,
-load: function (node, resolve) {
-  setTimeout(() => {
-    resolve([{
-      id: id++,
-      name: '新叶子节点' + id,
-      isLeaf: true
-    }])
-  }, 1000)
-}
+#### 示例
+```bash
+# Update the server config
+$ ./bm-server-installer settings bm-server/ --config ./config.json
+
+# Restart Bigemap Server
+$ (cd bm-server && ./bm-server.sh restart)
 ```
 
-### format
+### [配置Https/Http](#settings-protocol) {#settings-protocol}
+可以将BIgemap Server配置为使用Https进行通信以提高安全性。 在生产中，证书文件应由受信任的证书颁发机构签名。为了便于测试，提供了一个脚本来生成自签名证书。
 
-目前仅支持，id, name、children、isLeaf、icon、extra
+#### 配置证书文件
+```bash
+$ ./bm-server-installer settings <target> --ssl-key <path to pkey file> --ssl-cert <path to cert file>
+```
+##### 参数
+* `<target>`目标安装目录，例如`bm-server/`。
+* `--ssl-key`证书的私钥文件。
+* `--ssl-cert`证书文件。
+* `--ssl-ca`(可选) CA证书文件。
 
-```js
-format: function(data) {
-  return {
-    name: data.title,
-    children: data.child,
-    isLeaf: !data.child,
-    icon: 'custom-icon' || document.createElement
-  }
-}
+#### 示例
+```bash
+# Use the certificate file
+$ ./bm-server-installer settings bm-server/ --ssl-key ./cert/pri.key --ssl-cert ./cert/cert.crt
+
+# Use self-signed certificate
+$ ./bm-server-installer settings bm-server/ --self-signed
+
+# Switch to HTTP
+$ ./bm-server-installer settings bm-server/ --http
+
+# Restart Bigemap Server
+$ (cd bm-server && ./bm-server.sh restart)
 ```
 
+### [配置授权服务](#settings-auth-service) {#settings-auth-service}
+配置离线地图服务器授权服务，仅适用于特定终端授权程序。
 
-## Tips
-
-1. maxHeight 高度变大后 `showCount` 也要相应变大，不然滑动到底部后数据展示不全，会出现空白.
-2. minHeight 可以配置最小高度，当 minHeight 和 maxHeight 配置相同的高度时，可以固定高度
-3. 如果发现vs-tree组件不显示数据渲染结果为空，则在vs-tree组件上加v-if="list.length > 0" 判断下等数据加载完毕后进行渲染
-4. itemHeight 是用于内部计算，dom元素真是高度需要用css指定
-5. lazy为true时需手动添加isLeaf标识
-
-## License
-
-[MIT License](https://github.com/yangjingyu/vs-tree/blob/master/LICENSE).
-
-## QQ交流群(860150548)
-
-<img src="./public/static/qq-group.jpg" width="200" height= "350" alt="860150548" />
+1. 下载特定授权服务程序，并存放在安装目录下`docker`目录中；如`bm-server/docker`中。
+2. 执行`settings`命令
+```bash
+$ ./bm-server-installer settings bm-server/ --init-auth
+```
+3. 重启服务
+```bash
+$ (cd bm-server && ./bm-server.sh restart)
+```

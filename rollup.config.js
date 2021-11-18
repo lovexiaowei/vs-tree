@@ -53,11 +53,11 @@ export default {
     json(),
     tsPlugin,
     commonjs(),
-    eslint({
-      // fix: true,
-      include: ['./src/**/**.js'],
-      exclude: ['node_modules/**', 'src/less/**']
-    }),
+    // eslint({
+    //   // fix: true,
+    //   include: ['./src/**/**.js'],
+    //   exclude: ['node_modules/**', 'src/less/**']
+    // }),
     babel({
       babelHelpers: 'bundled',
       extensions: extensions
@@ -66,6 +66,6 @@ export default {
       plugins: postcssPlugin,
       extract: 'vs-tree.css'
     }),
-    !isDev && terser()
+    // !isDev && terser()
   ]
 }
