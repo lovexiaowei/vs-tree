@@ -17,12 +17,10 @@ export default class TreeStore {
 
     // 当前展开节点
     this.expandMap = {}
-
     this.root = new Node({
       data: this.data,
       store: this
     })
-
     this.updateNodes()
 
     // 面包屑
@@ -45,7 +43,7 @@ export default class TreeStore {
 
   // 获取节点列表
   flattenTreeData () {
-    const nodes = []
+    const nodes = [];
     const dig = (val) => {
       nodes.push(val)
       if (val.childNodes && val.childNodes.length) {
