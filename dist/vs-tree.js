@@ -2051,6 +2051,7 @@
           // 手风琴模式
           draggable: ops.draggable || false,
           dropable: ops.dropable || false,
+          canDrop: ops.canDrop,
           lazy: ops.lazy || false,
           sort: ops.sort || false,
           indent: ops.indent || 10,
