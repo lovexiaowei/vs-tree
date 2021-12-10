@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    input[type=range] {
+        -webkit-appearance: slider-vertical;
+    }
+</style>
+<body>
+<button data-type="a" class="a">a</button>
+<button data-type="b" class="a">b</button>
+  <input id="range" type="range" max="100" min="0" step="1">
+</body>
+</html>
+<script type="text/javascript">
+    [...document.getElementsByClassName('a')].map(v=>{
+        v.addEventListener('click',function (){
+            let data=this.dataset;
+            let range=document.getElementById('range');
+            let value=parseInt(range.value);
+            if (data.type==='a'){
+                value=++value;
+            }else{
+                value=--value;
+            }
+            console.log(value);
+            range.value=value;
+        })
+    });
+</script>

@@ -19,6 +19,7 @@
   "style": "./dist/vs-tree.css",
   "scripts": {
     "dev": "rollup -c --watch",
+    "watch": "rollup -c --watch",
     "build": "NODE_ENV=production rollup -c",
     "lint": "eslint ./ --fix"
   },

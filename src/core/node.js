@@ -617,7 +617,9 @@ export default class Node {
                 // setData is required for draggable to work in FireFox
                 // the content has to be '' so dragging a node out of the tree won't open a new tab in FireFox
                 e.dataTransfer.setData('text/plain', '')
-            } catch (e) { }
+            } catch (e) {
+
+            }
         })
 
         // Chorme下，拖拽必须禁止默认事件否则drop事件不会触发
@@ -676,8 +678,8 @@ export default class Node {
         })
 
         dom.addEventListener('drop', (e) => {
-            e.stopPropagation()
-            this.store.onDrop(e, this, this.store.dropPostion)
+            e.stopPropagation();
+            this.store.onDrop(e, this, this.store.dropPostion);
             if (this.store.dropable) {
                 removeClass(this.store.dropNode)
                 const dragNode = this.store.dragNode
