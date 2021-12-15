@@ -41,7 +41,6 @@ export default class Node {
         if (this.store.checkInherit && this.parent) {
             this.checked = this.parent.checked
         }
-
         if (this.store.disabledInherit && this.parent) {
             this.disabled = this.parent.disabled
         }
@@ -57,11 +56,14 @@ export default class Node {
         if (this.parent) {
             this.level = this.parent.level + 1
         }
-
         if (this.data) {
+            if (this.data.indeterminate===true){
+                this.indeterminate=true;
+            }else{
+                if (this.data.checked===true) this.checked=true;
+            }
             this.setData(this.data)
         }
-
         this.initData()
     }
 
@@ -384,13 +386,13 @@ export default class Node {
             })
             child = new Node(child)
         }
-
         child.level = this.level + 1
-
         if (typeof index === 'undefined' || index < 0) {
-            this.childNodes.push(child)
+            this.childNodes.push(child);
+            // this.data.children&&this.data.children.push(child.data);
         } else {
             this.childNodes.splice(index, 0, child)
+            // this.data.children&&this.data.children.splice(index,0,child.data);
         }
         return child
     }
@@ -616,7 +618,7 @@ export default class Node {
             try {
                 // setData is required for draggable to work in FireFox
                 // the content has to be '' so dragging a node out of the tree won't open a new tab in FireFox
-                e.dataTransfer.setData('text/plain', '')
+                e.dataTransfer && e.dataTransfer.setData('text/plain', '')
             } catch (e) {
 
             }
@@ -631,8 +633,12 @@ export default class Node {
             e.stopPropagation()
             e.preventDefault()
 
-            removeClass(this.store.dropNode)
-
+            this.store.dropNode&&removeClass(this.store.dropNode)
+            if (this.store.dragNode.dom === this.dom) {
+                //如果放到自己上面，那么不做处理
+                this.store.dropNode=null;
+                return;
+            }
             const dropNode = this.dom
             if (!dropNode) return
 
@@ -672,19 +678,53 @@ export default class Node {
         }
 
         dom.addEventListener('dragleave', (e) => {
+            // console.log('leave')
+            // this.store.dropNode&&removeClass(this.store.dropNode);
             if (this.store.dropable) {
                 removeClass(e.target)
             }
         })
-
         dom.addEventListener('drop', (e) => {
             e.stopPropagation();
-            this.store.onDrop(e, this, this.store.dropPostion);
+            if (!this.store.dropNode)return;
+            // this.store.onDrop(e, this, this.store.dropPostion)
+            this.store.onDrop(e, this.store.dragNode,this);
+            // console.log(this.store.dragNode,this);
             if (this.store.dropable) {
                 removeClass(this.store.dropNode)
-                const dragNode = this.store.dragNode
+                const dragNode = this.store.dragNode;
                 if (dragNode && this.parent) {
-                    const data = Object.assign({}, dragNode.data)
+                    // dragNode.childNodes
+                    let son=[];
+                    dragNode.childNodes.map(v=>{
+                        if (v.data) son.push(v.data.id);
+                    });
+                    // console.log(son,this.data.id);
+                    if (son.indexOf(this.data.id)>-1){
+                        return;
+                    }
+                    let data = Object.assign({}, dragNode.data)
+                    // debugger;
+                    // console.log(dragNode.childNodes,dragNode.data);
+                    if (dragNode.childNodes){
+                        let a=dragNode.data;
+                        if(dragNode.indeterminate===true){
+                            a.indeterminate=true;
+                        }else{
+                            if (dragNode.checked===true) a.checked=true;
+                        }
+                        a.children=[];
+                        dragNode.childNodes.map(v=>{
+                            if (v.indeterminate===true){
+                                v.data.indeterminate=true;
+                            }else{
+                                if (v.checked===true)v.data.checked=true;
+                            }
+                            a.children.push(v.data);
+                        });
+                        // console.log(a);
+                        data=a;
+                    }
                     dragNode.remove()
                     if (!data) return
                     if (this.store.dropPostion === -1) {
@@ -764,12 +804,14 @@ export default class Node {
         }
         this.store.updateNodes()
     }
-    setTitle(title){
-        this.data.name=title;
-        if (this.dom){
-            this.dom.getElementsByClassName('vs-tree-text')[0].innerText=title
+
+    setTitle (title) {
+        this.data.name = title
+        if (this.dom) {
+            this.dom.getElementsByClassName('vs-tree-text')[0].innerText = title
         }
     }
+
     // 添加节点
     append (data) {
         if (!data || typeof data !== 'object') return
@@ -780,7 +822,7 @@ export default class Node {
         const node = this.insertChild({
             data: data,
             store: this.store
-        });
+        })
 
         this.data.children ? this.data.children.push(data) : this.data.children = [data]
         this.isLeaf = false
@@ -791,6 +833,7 @@ export default class Node {
         node.updateCheckedParent()
         this.store.updateNodes()
     }
+
     unshift (data) {
         if (!data || typeof data !== 'object') return
         let olddom = this.dom
@@ -800,7 +843,7 @@ export default class Node {
         const node = this.insertChild({
             data: data,
             store: this.store
-        },0);
+        }, 0)
         this.data.children ? this.data.children.unshift(data) : this.data.children = [data]
         this.isLeaf = false
         if (olddom) {

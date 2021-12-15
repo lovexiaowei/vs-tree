@@ -101,7 +101,7 @@ export default class Vlist {
     const offset = this.getOffset()
     const clientSize = this.getClientSize()
     const scrollSize = this.getScrollSize()
-    // iOS scroll-spring-back behavior will make direction mistake
+    //iOS scroll-spring-back behavior will make direction mistake
     if (offset < 0 || (offset + clientSize > scrollSize + 1) || !scrollSize) {
       return
     }

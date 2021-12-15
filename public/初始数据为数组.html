@@ -11,52 +11,52 @@
 
 <body>
   <p>原始数据为数组时，自动为数据包裹一层根节点,如果不设置rootName则<mark>showRoot</mark>默认设置为<mark>false</mark></p>
-  <div id="tree"></div>
   <button id="checked" type="button">获取选中元素</button>
+  <div id="tree"></div>
   <script src="../dist/vs-tree.js"></script>
   <script>
-    console.time('create:data')
-    var id = 1000
+    var id = 1;
     function add(parentId, name) {
       const list = []
       for (var i = 0; i < 2; i++) {
-        list.push({ id: '100' + id++, name: name+i, parentId: parentId })
+        list.push({ id: 's' + id++, name: name+i, parentId: parentId })
       }
       return list
     }
     const data = [
-      { id: '104', name: 'oo-2', parentId: '1' },
-      { id: '100', name: 'wangwu', parentId: '1', children: add('100', 'wangwu') },
+      { id: '100', name: 'wangwu', parentId: '1', children: add('100', 'wangwu')},
       { id: '101', name: 'zhaoliu', parentId: '1', children: add('101', 'zhaoliu') },
       { id: '102', name: 'huahua', parentId: '1',  children: add('102', 'CC')},
       { id: '103', name: 'oo-1', parentId: '1' },
-      { id: '105', name: 'oo-3', parentId: '1' },
-      { id: '106', name: 'oo-4', parentId: '1' },
-      { id: '107', name: 'oo-5', parentId: '1' },
-      { id: '108', name: 'oo-6', parentId: '1' },
-      { id: '109', name: 'oo-7', parentId: '1' },
-      { id: '110', name: 'oo-8', parentId: '1' },
-      { id: '111', name: 'oo-9', parentId: '1' },
+      { id: '104', name: 'oo-2', parentId: '1' },
+      // { id: '105', name: 'oo-3', parentId: '1' },
+      // { id: '106', name: 'oo-4', parentId: '1' },
+      // { id: '107', name: 'oo-5', parentId: '1' },
+      // { id: '108', name: 'oo-6', parentId: '1' },
+      // { id: '109', name: 'oo-7', parentId: '1' },
+      // { id: '110', name: 'oo-8', parentId: '1' },
+      // { id: '111', name: 'oo-9', parentId: '1' },
     ]
     // console.timeEnd('create:data')
     // console.time('render:tree');
     const tree = new vsTree.default('#tree', {
       data: data,
+      // maxHeight:200,
       showCheckbox: true,
       draggable:true,
       indent:30,
       dropable:true,
       onDrop:(a,b,c)=>{
-        console.log(a,b,c);
-      }
+        // console.log(a,b,c);
+      },
       // rootName: '根节点'
     });
     // console.timeEnd('render:tree');
     document.getElementById("checked").onclick = function () {
-      console.log(tree);
+      // console.log(tree);
       console.log(tree.getCheckedNodes());
     }
-    var a=tree.getNodeById('100');
+    var a=tree.getNodeById('102');
     var b=tree.getNodeById('1001001');
   </script>
 </body>

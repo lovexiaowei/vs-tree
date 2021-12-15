@@ -66,6 +66,7 @@ export default {
       plugins: postcssPlugin,
       extract: 'vs-tree.css'
     }),
+    terser()
     // !isDev && terser()
   ]
 }
