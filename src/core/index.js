@@ -139,6 +139,7 @@ export default class Tree {
           this._render()
         },
         nodesChange: (nodes) => {
+          console.log(nodes);
           this.nodes = nodes
           this.vlist && this._render()
         }
@@ -237,7 +238,9 @@ export default class Tree {
     this._render()
     return this.data
   }
-
+  push(data){
+    this._render()
+  }
   // 根据ID获取节点
   getNodeById (id) {
     return this.store.getNodeById(id)
