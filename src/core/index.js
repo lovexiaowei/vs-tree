@@ -1,7 +1,7 @@
 import TreeStore from './store'
 import Vlist from '../virtual-list'
 import Breadcrumb from '../breadcrumb'
-
+import Node from './node';
 const noop = () => { }
 export default class Tree {
   constructor (selector, ops) {
@@ -139,7 +139,8 @@ export default class Tree {
           this._render()
         },
         nodesChange: (nodes) => {
-          console.log(nodes);
+          // console.log(nodes);
+          // console.log(this.store.data);
           this.nodes = nodes
           this.vlist && this._render()
         }
@@ -238,7 +239,9 @@ export default class Tree {
     this._render()
     return this.data
   }
+
   push(data){
+    console.log(this.nodes);
     this._render()
   }
   // 根据ID获取节点

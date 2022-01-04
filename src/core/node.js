@@ -384,6 +384,7 @@ export default class Node {
                 parent: this,
                 store: this.store
             })
+            debugger;
             child = new Node(child)
         }
         child.level = this.level + 1
@@ -696,9 +697,19 @@ export default class Node {
                 if (dragNode && this.parent) {
                     // dragNode.childNodes
                     let son=[];
-                    dragNode.childNodes.map(v=>{
-                        if (v.data) son.push(v.data.id);
-                    });
+                    function dig(node){
+                        node.map(v=>{
+                            son.push(v.data.id);
+                            if (v.childNodes&&v.childNodes.length){
+                                dig(v.childNodes);
+                            }
+                        });
+                    }
+                    dig(dragNode.childNodes);
+                    // dragNode.childNodes.map(v=>{
+                    //     if (v.data) son.push(v.data.id);
+                    // });
+                    // debugger;
                     // console.log(son,this.data.id);
                     if (son.indexOf(this.data.id)>-1){
                         return;
