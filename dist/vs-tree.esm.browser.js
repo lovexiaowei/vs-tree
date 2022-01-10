@@ -144,13 +144,13 @@ var parseTemplate = function parseTemplate(name, ctx) {
   return false;
 };
 
-var setepId = 0;
+var stepId = 0;
 
 var Node = /*#__PURE__*/function () {
   function Node(ops) {
     _classCallCheck(this, Node);
 
-    this.id = setepId++;
+    this.id = stepId++;
     this.checked = false;
     this.expanded = false;
     this.indeterminate = false;
@@ -582,8 +582,8 @@ var Node = /*#__PURE__*/function () {
         Object.assign(child, {
           parent: this,
           store: this.store
-        });
-        debugger;
+        }); // debugger;
+
         child = new Node(child);
       }
 
@@ -948,8 +948,7 @@ var Node = /*#__PURE__*/function () {
               return;
             }
 
-            var data = Object.assign({}, dragNode.data); // debugger;
-            // console.log(dragNode.childNodes,dragNode.data);
+            var data = Object.assign({}, dragNode.data);
 
             if (dragNode.childNodes) {
               var a = dragNode.data;
@@ -2274,11 +2273,15 @@ var Tree = /*#__PURE__*/function () {
       return this.data;
     }
   }, {
-    key: "push",
-    value: function push(data) {
-      console.log(this.nodes);
-
-      this._render();
+    key: "append",
+    value: function append(data) {
+      this.store.root.append(data); // console.log();
+      // this._render()
+    }
+  }, {
+    key: "unshift",
+    value: function unshift(data) {
+      this.store.root.unshift(data); // this._render()
     } // 根据ID获取节点
 
   }, {

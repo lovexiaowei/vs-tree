@@ -23,8 +23,10 @@
       }
       return list
     }
+    let cc=add('100', 'wangwu');
+    cc[0].children=add(cc[0].id,'666');
     const data = [
-      { id: '100', name: 'wangwu', parentId: '1', children: add('100', 'wangwu')},
+      { id: '100', name: 'wangwu', parentId: '1', children: cc},
       { id: '101', name: 'zhaoliu', parentId: '1', children: add('101', 'zhaoliu') },
       { id: '102', name: 'huahua', parentId: '1',  children: add('102', 'CC')},
       { id: '103', name: 'oo-1', parentId: '1' },
@@ -56,6 +58,7 @@
       // console.log(tree);
       console.log(tree.getCheckedNodes());
     }
+    var tt={ id: '108', name: 'oo-2', parentId: '1',checked:true };
     var a=tree.getNodeById('102');
     var b=tree.getNodeById('1001001');
   </script>

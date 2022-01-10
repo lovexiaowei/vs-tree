@@ -1,10 +1,10 @@
 import { insterAfter, onDragEnterGap, parseTemplate } from './utils.ts'
 
-let setepId = 0
+let stepId = 0
 
 export default class Node {
     constructor (ops) {
-        this.id = setepId++
+        this.id = stepId++
         this.checked = false
         this.expanded = false
         this.indeterminate = false
@@ -384,7 +384,7 @@ export default class Node {
                 parent: this,
                 store: this.store
             })
-            debugger;
+            // debugger;
             child = new Node(child)
         }
         child.level = this.level + 1
@@ -715,8 +715,6 @@ export default class Node {
                         return;
                     }
                     let data = Object.assign({}, dragNode.data)
-                    // debugger;
-                    // console.log(dragNode.childNodes,dragNode.data);
                     if (dragNode.childNodes){
                         let a=dragNode.data;
                         if(dragNode.indeterminate===true){

@@ -20,7 +20,8 @@ export default class Tree {
     _hasKeyword(v: any): any;
     _checkFilter(v: any): any;
     filter(keyword: string | undefined, onlySearchLeaf: any): any[];
-    push(data: any): void;
+    append(data: any): void;
+    unshift(data: any): void;
     getNodeById(id: any): any;
     getCheckedNodes(): any[];
     setMaxValue(value?: number): void;

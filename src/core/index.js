@@ -240,9 +240,14 @@ export default class Tree {
     return this.data
   }
 
-  push(data){
-    console.log(this.nodes);
-    this._render()
+  append(data){
+    this.store.root.append(data);
+    // console.log();
+    // this._render()
+  }
+  unshift(data){
+    this.store.root.unshift(data);
+    // this._render()
   }
   // 根据ID获取节点
   getNodeById (id) {
