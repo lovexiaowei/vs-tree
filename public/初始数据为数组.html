@@ -5,15 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>vs-tree2.0_初始数据为数组</title>
+<!--  <link rel="stylesheet" href="../dist/vs-tree.css">-->
+  <script src="../dist/vs-tree.js"></script>
   <link rel="stylesheet" href="../dist/vs-tree.css">
-  <link rel="stylesheet" href="./static/css/index.css">
 </head>
 
 <body>
   <p>原始数据为数组时，自动为数据包裹一层根节点,如果不设置rootName则<mark>showRoot</mark>默认设置为<mark>false</mark></p>
   <button id="checked" type="button">获取选中元素</button>
   <div id="tree"></div>
-  <script src="../dist/vs-tree.js"></script>
+
   <script>
     var id = 1;
     function add(parentId, name) {
@@ -46,11 +47,21 @@
       // maxHeight:200,
       showCheckbox: true,
       draggable:true,
+      showIcon:true,
       indent:30,
       dropable:true,
+      canDrop:(a)=>{
+          // return false;
+      },
       onDrop:(a,b,c)=>{
         // console.log(a,b,c);
       },
+      format:function (data){
+        var a=new Image(20,20);
+        a.src='http://mytest15.com/upload/columnthumbnail/20180328/5abb657fa458f.png';
+        data.icon=a;
+        return data;
+      }
       // rootName: '根节点'
     });
     // console.timeEnd('render:tree');
@@ -59,7 +70,7 @@
       console.log(tree.getCheckedNodes());
     }
     var tt={ id: '108', name: 'oo-2', parentId: '1',checked:true };
-    var a=tree.getNodeById('102');
+    var a=tree.getNodeById('103');
     var b=tree.getNodeById('1001001');
   </script>
 </body>

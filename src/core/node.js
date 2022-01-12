@@ -355,13 +355,11 @@ export default class Node {
         this.store.nodeMap.set(this.id, this)
         this.data = data
         this.childNodes = []
-
         if (typeof data.isLeaf === 'boolean') {
             this.isLeaf = data.isLeaf
         } else if (!data.children && !this.store.lazy) {
             this.isLeaf = true
         }
-
         let children
         if (this.level === 0 && this.data instanceof Node) {
             children = this.data
@@ -657,12 +655,15 @@ export default class Node {
                     this.setExpand(true)
                 }
                 if (enterGap === -1) {
-                    dropNode.classList.add('vs-drag-over-gap-top')
+
+                    // dropNode.classList.add('vs-drag-over-gap-top')
+                    dropNode.classList.add('vs-drag-over-node')
                     return
                 }
 
                 if (enterGap === 1) {
-                    dropNode.classList.add('vs-drag-over-gap-bottom')
+                    // dropNode.classList.add('vs-drag-over-gap-bottom')
+                    dropNode.classList.add('vs-drag-over-node')
                     return
                 }
                 if (!this.isLeaf) {
@@ -673,9 +674,10 @@ export default class Node {
 
         function removeClass (dom) {
             if (!dom) return
-            dom.classList.remove('vs-drag-enter')
-            dom.classList.remove('vs-drag-over-gap-bottom')
-            dom.classList.remove('vs-drag-over-gap-top')
+            dom.classList.remove('vs-drag-over-node')
+            // dom.classList.remove('vs-drag-enter')
+            // dom.classList.remove('vs-drag-over-gap-bottom')
+            // dom.classList.remove('vs-drag-over-gap-top')
         }
 
         dom.addEventListener('dragleave', (e) => {
@@ -685,9 +687,15 @@ export default class Node {
                 removeClass(e.target)
             }
         })
+
         dom.addEventListener('drop', (e) => {
+            // debugger;
             e.stopPropagation();
             if (!this.store.dropNode)return;
+            if (this.store.canDrop&&this.store.canDrop(this.store.dragNode,this)===false){
+                removeClass(this.store.dropNode);
+                return false;
+            }
             // this.store.onDrop(e, this, this.store.dropPostion)
             this.store.onDrop(e, this.store.dragNode,this);
             // console.log(this.store.dragNode,this);
@@ -722,7 +730,9 @@ export default class Node {
                         }else{
                             if (dragNode.checked===true) a.checked=true;
                         }
-                        a.children=[];
+                        if (dragNode.childNodes&&dragNode.childNodes.length){
+                            a.children=[];
+                        }
                         dragNode.childNodes.map(v=>{
                             if (v.indeterminate===true){
                                 v.data.indeterminate=true;
@@ -734,19 +744,27 @@ export default class Node {
                         // console.log(a);
                         data=a;
                     }
-                    dragNode.remove()
+                    dragNode.remove();
                     if (!data) return
-                    if (this.store.dropPostion === -1) {
+                    if (this.isLeaf===false){
+                        this.unshift(data);
+                    }else if ([1,-1].indexOf(this.store.dropPostion)>-1){
                         this.parent.insertBefore({ data }, this)
                         this.updateCheckedParent()
                         this.store.updateNodes()
-                    } else if (this.store.dropPostion === 1) {
-                        this.parent.insertAfter({ data }, this)
-                        this.updateCheckedParent()
-                        this.store.updateNodes()
-                    } else if (!this.isLeaf) {
-                        this.append(data)
                     }
+                    // console.log(this.isLeaf,this);
+                    // if (this.store.dropPostion === -1) {
+                    //     this.parent.insertBefore({ data }, this)
+                    //     this.updateCheckedParent()
+                    //     this.store.updateNodes()
+                    // } else if (this.store.dropPostion === 1) {
+                    //     this.parent.insertAfter({ data }, this)
+                    //     this.updateCheckedParent()
+                    //     this.store.updateNodes()
+                    // } else if (!this.isLeaf) {
+                    //     this.append(data)
+                    // }
                 }
             }
         })

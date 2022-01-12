@@ -1,8 +1,8 @@
 .vs-loading {
   min-height: 100px;
   background-image: url(./oval.svg);
-  background-position: center center;
   background-repeat: no-repeat;
+  background-position: center center;
 }
 .vs-tree-node {
   height: 26px;
@@ -305,6 +305,19 @@
   background-color: rgba(25, 137, 250, 0.8);
   color: #fff;
 }
+.vs-tree-node.vs-drag-over-node {
+  position: relative;
+}
+.vs-tree-node.vs-drag-over-node::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  color: #fff;
+  border: 1px dashed #1989fa;
+}
 .vs-tree-node.vs-drag-over-gap-top,
 .vs-tree-node.vs-drag-over-gap-bottom {
   position: relative;
@@ -325,7 +338,7 @@
   bottom: 0;
 }
 .vs-search-only-leaf .vs-tree-inner {
-  padding-left: 0!important;
+  padding-left: 0 !important;
 }
 .vs-search-only-leaf .vs-tree-inner .expand-empty {
   display: none;
