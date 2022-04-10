@@ -53,6 +53,7 @@ export default class Node {
     loading: boolean | undefined;
     remove(): void;
     setTitle(title: any): void;
+    getSon(level: any): any;
     append(data: any): void;
     unshift(data: any): void;
 }

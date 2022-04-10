@@ -14,7 +14,6 @@ export default class TreeStore {
 
     // 当前选中节点
     this.radioMap = {}
-
     // 当前展开节点
     this.expandMap = {}
     this.root = new Node({
@@ -37,7 +36,8 @@ export default class TreeStore {
 
   // 更新节点列表
   updateNodes () {
-    this.nodes = this.flattenTreeData()
+    this.nodes = this.flattenTreeData();
+    this.aaa=1;
     this.nodesChange(this.nodes)
   }
 

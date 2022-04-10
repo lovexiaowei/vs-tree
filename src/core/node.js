@@ -70,7 +70,7 @@ export default class Node {
     initData () {
         if (this.level > this.store.expandLevel && this.store.expandLevel !== -1 && !(this.parent?.expanded)) {
             this.visbile = false
-            return
+            return;
         }
         this.visbile = true
     }
@@ -838,7 +838,13 @@ export default class Node {
             this.dom.getElementsByClassName('vs-tree-text')[0].innerText = title
         }
     }
+    getSon(level){
 
+        if (!level){
+
+        }
+        return this.parent;
+    }
     // 添加节点
     append (data) {
         if (!data || typeof data !== 'object') return
