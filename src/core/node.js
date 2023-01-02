@@ -10,6 +10,7 @@ export default class Node {
         this.indeterminate = false
         this.visbile = false
         this.disabled = false
+        this.enterGap = 0
         this.loaded = false
         this.isLeaf = false
 
@@ -57,10 +58,10 @@ export default class Node {
             this.level = this.parent.level + 1
         }
         if (this.data) {
-            if (this.data.indeterminate===true){
-                this.indeterminate=true;
-            }else{
-                if (this.data.checked===true) this.checked=true;
+            if (this.data.indeterminate === true) {
+                this.indeterminate = true
+            } else {
+                if (this.data.checked === true) this.checked = true
             }
             this.setData(this.data)
         }
@@ -70,7 +71,7 @@ export default class Node {
     initData () {
         if (this.level > this.store.expandLevel && this.store.expandLevel !== -1 && !(this.parent?.expanded)) {
             this.visbile = false
-            return;
+            return
         }
         this.visbile = true
     }
@@ -387,7 +388,7 @@ export default class Node {
         }
         child.level = this.level + 1
         if (typeof index === 'undefined' || index < 0) {
-            this.childNodes.push(child);
+            this.childNodes.push(child)
             // this.data.children&&this.data.children.push(child.data);
         } else {
             this.childNodes.splice(index, 0, child)
@@ -625,23 +626,26 @@ export default class Node {
 
         // Chorme下，拖拽必须禁止默认事件否则drop事件不会触发
         dom.addEventListener('dragover', (e) => {
+            if (this.dom) {
+                this.enterGap = e.clientY - this.dom.getBoundingClientRect().top - 13 > 0 ? 1 : -1
+            }
             e.preventDefault()
         })
 
         dom.addEventListener('dragenter', (e) => {
+            // console.log('enter')
             e.stopPropagation()
             e.preventDefault()
-
-            this.store.dropNode&&removeClass(this.store.dropNode)
+            this.store.dropNode && removeClass(this.store.dropNode)
             if (this.store.dragNode.dom === this.dom) {
                 //如果放到自己上面，那么不做处理
-                this.store.dropNode=null;
-                return;
+                this.store.dropNode = null
+                return
             }
             const dropNode = this.dom
-            if (!dropNode) return
-
-            const enterGap = onDragEnterGap(e, dropNode)
+            if (!dropNode || !this.enterGap) return
+            // const enterGap = onDragEnterGap(e, dropNode)
+            let enterGap=this.enterGap;
             if (this.store.dragNode.dom === dropNode && enterGap === 0) return
 
             this.store.dropPostion = enterGap
@@ -650,31 +654,32 @@ export default class Node {
 
             this.store.onDragenter(e, this, dropNode, enterGap)
 
-            if (this.store.dropable) {
-                if (!this.expanded && !this.isLeaf) {
-                    this.setExpand(true)
-                }
-                if (enterGap === -1) {
+            if (!this.store.dropable) return
 
-                    // dropNode.classList.add('vs-drag-over-gap-top')
-                    dropNode.classList.add('vs-drag-over-node')
-                    return
-                }
+            if (!this.expanded && !this.isLeaf) {
+                // this.setExpand(true)
+            }
 
-                if (enterGap === 1) {
-                    // dropNode.classList.add('vs-drag-over-gap-bottom')
-                    dropNode.classList.add('vs-drag-over-node')
-                    return
-                }
-                if (!this.isLeaf) {
-                    dropNode.classList.add('vs-drag-enter')
-                }
+            if (enterGap === -1) {
+                // dropNode.classList.add('vs-drag-over-gap-top')
+                dropNode.classList.add('vs-drag-over-node-top')
+                return
+            }
+
+            if (enterGap === 1) {
+                // dropNode.classList.add('vs-drag-over-gap-bottom')
+                dropNode.classList.add('vs-drag-over-node-bottom')
+                return
+            }
+            if (!this.isLeaf) {
+                dropNode.classList.add('vs-drag-enter')
             }
         })
 
         function removeClass (dom) {
             if (!dom) return
-            dom.classList.remove('vs-drag-over-node')
+            dom.classList.remove('vs-drag-over-node-top');
+            dom.classList.remove('vs-drag-over-node-bottom');
             // dom.classList.remove('vs-drag-enter')
             // dom.classList.remove('vs-drag-over-gap-bottom')
             // dom.classList.remove('vs-drag-over-gap-top')
@@ -690,65 +695,68 @@ export default class Node {
 
         dom.addEventListener('drop', (e) => {
             // debugger;
-            e.stopPropagation();
-            if (!this.store.dropNode)return;
-            if (this.store.canDrop&&this.store.canDrop(this.store.dragNode,this)===false){
-                removeClass(this.store.dropNode);
-                return false;
+            this.enterGap = ''
+            e.stopPropagation()
+            if (!this.store.dropNode) return
+            if (this.store.canDrop && this.store.canDrop(this.store.dragNode, this) === false) {
+                removeClass(this.store.dropNode)
+                return false
             }
-            // this.store.onDrop(e, this, this.store.dropPostion)
-            this.store.onDrop(e, this.store.dragNode,this);
+            //this.store.onDrop(e, this, this.store.dropPostion)
+            this.store.onDrop(e, this.store.dragNode, this)
             // console.log(this.store.dragNode,this);
             if (this.store.dropable) {
                 removeClass(this.store.dropNode)
-                const dragNode = this.store.dragNode;
+                const dragNode = this.store.dragNode
                 if (dragNode && this.parent) {
                     // dragNode.childNodes
-                    let son=[];
-                    function dig(node){
-                        node.map(v=>{
-                            son.push(v.data.id);
-                            if (v.childNodes&&v.childNodes.length){
-                                dig(v.childNodes);
+                    let son = []
+
+                    function dig (node) {
+                        node.map(v => {
+                            son.push(v.data.id)
+                            if (v.childNodes && v.childNodes.length) {
+                                dig(v.childNodes)
                             }
-                        });
+                        })
                     }
-                    dig(dragNode.childNodes);
+
+                    dig(dragNode.childNodes)
                     // dragNode.childNodes.map(v=>{
                     //     if (v.data) son.push(v.data.id);
                     // });
                     // debugger;
                     // console.log(son,this.data.id);
-                    if (son.indexOf(this.data.id)>-1){
-                        return;
+                    if (son.indexOf(this.data.id) > -1) {
+                        return
                     }
                     let data = Object.assign({}, dragNode.data)
-                    if (dragNode.childNodes){
-                        let a=dragNode.data;
-                        if(dragNode.indeterminate===true){
-                            a.indeterminate=true;
-                        }else{
-                            if (dragNode.checked===true) a.checked=true;
+                    if (dragNode.childNodes) {
+                        let a = dragNode.data
+                        if (dragNode.indeterminate === true) {
+                            a.indeterminate = true
+                        } else {
+                            if (dragNode.checked === true) a.checked = true
                         }
-                        if (dragNode.childNodes&&dragNode.childNodes.length){
-                            a.children=[];
+                        if (dragNode.childNodes && dragNode.childNodes.length) {
+                            a.children = []
                         }
-                        dragNode.childNodes.map(v=>{
-                            if (v.indeterminate===true){
-                                v.data.indeterminate=true;
-                            }else{
-                                if (v.checked===true)v.data.checked=true;
+                        dragNode.childNodes.map(v => {
+                            if (v.indeterminate === true) {
+                                v.data.indeterminate = true
+                            } else {
+                                if (v.checked === true) v.data.checked = true
                             }
-                            a.children.push(v.data);
-                        });
+                            a.children.push(v.data)
+                        })
                         // console.log(a);
-                        data=a;
+                        data = a
                     }
-                    dragNode.remove();
+                    dragNode.remove()
                     if (!data) return
-                    if (this.isLeaf===false){
-                        this.unshift(data);
-                    }else if ([1,-1].indexOf(this.store.dropPostion)>-1){
+                    if (this.isLeaf === false) {
+                        this.unshift(data)
+                    } else if ([1, -1].indexOf(this.store.dropPostion) > -1) {
                         this.parent.insertBefore({ data }, this)
                         this.updateCheckedParent()
                         this.store.updateNodes()
@@ -838,13 +846,15 @@ export default class Node {
             this.dom.getElementsByClassName('vs-tree-text')[0].innerText = title
         }
     }
-    getSon(level){
 
-        if (!level){
+    getSon (level) {
+
+        if (!level) {
 
         }
-        return this.parent;
+        return this.parent
     }
+
     // 添加节点
     append (data) {
         if (!data || typeof data !== 'object') return

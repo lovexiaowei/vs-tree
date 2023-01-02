@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vs-tree2.0_格式化数据</title>
+    <link rel="stylesheet" href="dist/vs-tree.css">
+</head>
+<style>
+    #tree {
+        margin-top: 150px;
+    }
+    .vs-tree-node{
+        height: 30px;
+    }
+</style>
+<body>
+<div id="tree"></div>
+<script src="dist/vs-tree.js"></script>
+<script>
+    var id = 1000
+
+    function add (parentId, name) {
+        const list = []
+        for (var i = 0; i < 100; i++) {
+            list.push({ id: '100' + id++, title: name + i, parentId: parentId })
+        }
+        return list
+    }
+
+    let data = [
+        { id: 1, title: '第1个', children: [{ id: 11, title: '1-1', pid: 1 },] },
+        { id: 2, title: '第2个' },
+        { id: 3, title: '第3个' },
+    ]
+    for (let i = 0; i <= 1000; i++) {
+        data.push({ id: 'a' + i, title: 'data' + i })
+    }
+    const tree = new VsTree.default('#tree', {
+        data: data,
+        virtual: {
+            showCount: 25,
+            itemHeight: 30
+        },
+        showCheckbox: true,
+        max: 0,
+        highlightCurrent: false,
+        indent: 20, // 缩进
+        lazy: true,
+        dropable: true,
+        draggable: true,
+        format: function (data) {
+            return {
+                parentId: data.pid || 0,
+                name: data.title,
+                children: data.children,
+                isLeaf: !data.children
+            }
+        }
+    })
+</script>
+</body>
+
+</html>

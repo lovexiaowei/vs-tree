@@ -6,6 +6,7 @@ export default class Node {
     indeterminate: boolean;
     visbile: boolean;
     disabled: any;
+    enterGap: number;
     loaded: boolean;
     isLeaf: boolean;
     level: any;

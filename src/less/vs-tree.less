@@ -149,7 +149,6 @@
         margin-top: -1px;
         border-bottom: 1px dashed #ddd;
     }
-
     &::before {
         content: "";
         position: absolute;
@@ -321,7 +320,7 @@
         background-color: rgba(#1989fa, .8);
         color: #fff;
     }
-    &.vs-drag-over-node{
+    &.vs-drag-over-node-top{
         position: relative;
 
         &::before {
@@ -333,10 +332,44 @@
             width: 100%;
             color: #fff;
             //height: 2px;
-            border: 1px dashed #1989fa;
+            border-top: 2px dashed #1989fa;
             //background-color: #1989fa;
         }
     }
+
+    &.vs-drag-over-node-bottom{
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top:0;
+            bottom: 0;
+            height: 100%;
+            width: 100%;
+            color: #fff;
+            //height: 2px;
+            border-bottom: 2px dashed #1989fa;
+            //background-color: #1989fa;
+        }
+    }
+    //&.vs-drag-over-node{
+    //    position: relative;
+    //
+    //    &::before {
+    //        content: '';
+    //        position: absolute;
+    //        left: 0;
+    //        top:0;
+    //        height: 100%;
+    //        width: 100%;
+    //        color: #fff;
+    //        //height: 2px;
+    //        border: 1px dashed #1989fa;
+    //        //background-color: #1989fa;
+    //    }
+    //}
 
     &.vs-drag-over-gap-top,
     &.vs-drag-over-gap-bottom {
