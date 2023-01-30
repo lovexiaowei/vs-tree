@@ -380,8 +380,7 @@ export default class Node {
     insertChild (child, index) {
         if (!(child instanceof Node)) {
             Object.assign(child, {
-                parent: this,
-                store: this.store
+                parent: this, store: this.store
             })
             // debugger;
             child = new Node(child)
@@ -609,7 +608,6 @@ export default class Node {
     // 创建拖拽
     createDraggable (dom) {
         dom.draggable = true
-
         dom.addEventListener('dragstart', (e) => {
             e.stopPropagation()
             this.store.dragNode = this
@@ -626,14 +624,13 @@ export default class Node {
 
         // Chorme下，拖拽必须禁止默认事件否则drop事件不会触发
         dom.addEventListener('dragover', (e) => {
-            // if (this.dom) {
-            // }
-            e.preventDefault()
-            if (!this.dom) return
+            e.preventDefault();
+            if (!this.dom || this === this.store.dragNode) return
             let halfH = (this.store.itemHeight || 26) / 2
-            let gap = e.clientY - this.dom.getBoundingClientRect().top - halfH > 0 ? 1 : -1
+            let gap = e.clientY - this.dom.getBoundingClientRect().top - halfH > 0 ? 1 : -1;
+            // console.log(gap);
             // if (gap === this.enterGap) return;
-            this.enterGap = gap
+            this.store.enterGap = gap;
             removeClass(this.dom);
             if (gap === -1) {
                 // dropNode.classList.add('vs-drag-over-gap-top')
@@ -653,21 +650,19 @@ export default class Node {
 
         dom.addEventListener('dragenter', (e) => {
             e.stopPropagation()
-            e.preventDefault()
+            e.preventDefault();
             this.store.dropNode && removeClass(this.store.dropNode)
-            if (this.store.dragNode.dom === this.dom) {
+            if (this.store.dragNode === this) {
                 //如果放到自己上面，那么不做处理
                 this.store.dropNode = null
                 return
             }
             const dropNode = this.dom
-            if (!dropNode || !this.enterGap) return
+            if (!dropNode) return
             // const enterGap = onDragEnterGap(e, dropNode)
-            let enterGap = this.enterGap
-            if (this.store.dragNode.dom === dropNode && enterGap === 0) return
-
-            this.store.dropPostion = enterGap
-
+            let enterGap = this.store.enterGap
+            // if (this.store.dragNode.dom === dropNode && enterGap === 0) return
+            // this.store.dropPostion = enterGap
             this.store.dropNode = dropNode
 
             this.store.onDragenter(e, this, dropNode, enterGap)
@@ -680,27 +675,24 @@ export default class Node {
         })
 
         dom.addEventListener('dragleave', (e) => {
-            // console.log('leave')
             this.store.dropNode && removeClass(this.store.dropNode)
-            removeClass(e.target);
-            // if (this.store.dropable) {
-            //     //
-            // }
+            removeClass(e.target)
         })
 
         dom.addEventListener('drop', (e) => {
-            let enterGap = this.enterGap;
-            this.enterGap = '';
+            let enterGap = this.store.enterGap;
+            this.store.enterGap = ''
             removeClass(this.dom)
             removeClass(this.store.dropNode)
-            e.stopPropagation()
+            e.stopPropagation();
+            // return ;
             if (!this.store.dropNode) return
             if (this.store.canDrop && typeof this.store.canDrop === 'function' && this.store.canDrop(this.store.dragNode, this) === false) {
                 return false
             }
-            if (!this.store.dropable) return
+
+            if (!this.store.dropable) return;
             //this.store.onDrop(e, this, this.store.dropPostion)
-            this.store.onDrop(e, this.store.dragNode, this)
             // console.log(this.store.dragNode,this);
             const dragNode = this.store.dragNode
             if (!dragNode || !this.parent) return
@@ -714,11 +706,11 @@ export default class Node {
                     }
                 })
             }
+
             dig(dragNode.childNodes)
             if (son.indexOf(this.data.id) > -1) {
                 return
             }
-
             let data = Object.assign({}, dragNode.data)
             if (dragNode.childNodes) {
                 let a = dragNode.data
@@ -744,16 +736,27 @@ export default class Node {
             dragNode.remove();
             if (!data) return;
             if (this.isLeaf === false) {
-                this.unshift(data);
+                if (enterGap === -1) {
+                    this.store.onDrop(e, this.store.dragNode, this);
+                    this.unshift(data);
+                } else {
+                    this.store.onDrop(e, this.store.dragNode, this.parent);
+                    this.parent.insertAfter({ data }, this)
+                    this.updateCheckedParent()
+                    this.store.updateNodes()
+                }
+
                 return
             } else if (enterGap === -1) {
+                this.store.onDrop(e, this.store.dragNode, this.parent);
                 this.parent.insertBefore({ data }, this)
-                this.updateCheckedParent();
-                this.store.updateNodes();
+                this.updateCheckedParent()
+                this.store.updateNodes()
             } else if (enterGap === 1) {
+                this.store.onDrop(e, this.store.dragNode, this.parent);
                 this.parent.insertAfter({ data }, this)
-                this.updateCheckedParent();
-                this.store.updateNodes();
+                this.updateCheckedParent()
+                this.store.updateNodes()
             }
             // console.log(this.isLeaf,this);
             // if (this.store.dropPostion === -1) {
@@ -804,8 +807,7 @@ export default class Node {
             if (children.length) {
                 children.forEach(data => {
                     this.insertChild({
-                        data: data,
-                        store: this.store
+                        data: data, store: this.store
                     })
                 })
                 this.childNodes[0].updateCheckedParent()
@@ -855,8 +857,7 @@ export default class Node {
             olddom = null
         }
         const node = this.insertChild({
-            data: data,
-            store: this.store
+            data: data, store: this.store
         })
 
         this.data.children ? this.data.children.push(data) : this.data.children = [data]
@@ -876,8 +877,7 @@ export default class Node {
             olddom = null
         }
         const node = this.insertChild({
-            data: data,
-            store: this.store
+            data: data, store: this.store
         }, 0)
         this.data.children ? this.data.children.unshift(data) : this.data.children = [data]
         this.isLeaf = false

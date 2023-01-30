@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vs-tree2.0_格式化数据</title>
-    <link rel="stylesheet" href="dist/vs-tree.css">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>vs-tree2.0_格式化数据</title>
+  <link rel='stylesheet' href='dist/vs-tree.css'>
 </head>
 <style>
     #tree {
-        margin-top: 150px;
+        margin-top: 10px;
     }
-    .vs-tree-node{
+
+    .vs-tree-node {
         height: 30px;
     }
 </style>
 <body>
-<div id="tree"></div>
-<script src="dist/vs-tree.js"></script>
+<div id='tree'></div>
+<script src='dist/vs-tree.js'></script>
 <script>
     var id = 1000
 
@@ -29,10 +30,11 @@
     }
 
     let data = [
-        { id: 1, title: '第1个', children: [{ id: 11, title: '1-1', pid: 1 },] },
-        { id: 2, title: '第2个' },
-        { id: 3, title: '第3个' },
+        { id: 1, title: '第1个', isLeaf: false, children: [{ id: 11, title: '1-1', pid: 1 }] },
+        { id: 2, title: '第2个', isLeaf: false,children: [{ id: 111, title: '2-1', pid: 2 }] },
+        { id: 3, title: '第3个', isLeaf: false,children: [{ id: 1111, title: '3-1', pid: 3 }] }
     ]
+
     for (let i = 0; i <= 1000; i++) {
         data.push({ id: 'a' + i, title: 'data' + i })
     }
@@ -50,6 +52,9 @@
         lazy: true,
         dropable: true,
         draggable: true,
+        onDrop:function (e,dragNode,dropNode){
+          console.log(arguments);
+        },
         format: function (data) {
             return {
                 parentId: data.pid || 0,
