@@ -3,3 +3,4 @@ export declare function insterAfter(newElement: HTMLElement, targetElement: HTML
 export declare function onDragEnterGap(e: MouseEvent, treeNode: HTMLElement): 1 | -1 | 0;
 export declare const findNearestNode: (element: HTMLElement, name: string) => any;
 export declare const parseTemplate: (name: string, ctx: Node) => any;
+export declare const removeClass: (dom: HTMLElement) => void;

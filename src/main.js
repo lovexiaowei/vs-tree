@@ -1,12 +1,12 @@
 import { version as _v } from '../package.json'
 import './less/vs-tree.less'
-import vsTree from './core'
+import VsTree from './core'
 import plugin from './vue-plugin'
 
-export default vsTree
+export default VsTree
 
-// 版本号
-export const version = _v
-
-// Vue 插件
-export const install = plugin(vsTree)
+// // 版本号
+// export const version = _v
+//
+// // Vue 插件
+// export const install = plugin(vsTree)

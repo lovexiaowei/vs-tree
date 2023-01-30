@@ -36,7 +36,8 @@
     for (let i = 0; i <= 1000; i++) {
         data.push({ id: 'a' + i, title: 'data' + i })
     }
-    const tree = new VsTree.default('#tree', {
+
+    const tree = new VsTree('#tree', {
         data: data,
         virtual: {
             showCount: 25,
