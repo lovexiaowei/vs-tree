@@ -8,7 +8,6 @@ export default class TreeStore {
     root: Node;
     setData(val: any): void;
     updateNodes(): void;
-    aaa: number | undefined;
     flattenTreeData(): any[];
     getNodeById(id: any): any;
     getCheckedNodes(): any[];

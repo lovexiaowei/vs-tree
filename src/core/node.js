@@ -387,12 +387,13 @@ export default class Node {
         }
         child.level = this.level + 1
         if (typeof index === 'undefined' || index < 0) {
-            this.childNodes.push(child)
-            // this.data.children&&this.data.children.push(child.data);
+            this.childNodes.push(child);
         } else {
             this.childNodes.splice(index, 0, child)
             // this.data.children&&this.data.children.splice(index,0,child.data);
         }
+        // if (!this.data.children) this.data.children=[];
+        // this.data.children.push(child.data);
         return child
     }
 
@@ -531,6 +532,7 @@ export default class Node {
 
     // 设置默认展开
     setExpand (expand, noUpdate) {
+        // debugger;
         this.expanded = expand
         this.updateExpand(this.expanded)
         this.setAccordion(expand)
@@ -624,14 +626,14 @@ export default class Node {
 
         // Chorme下，拖拽必须禁止默认事件否则drop事件不会触发
         dom.addEventListener('dragover', (e) => {
-            e.preventDefault();
+            e.preventDefault()
             if (!this.dom || this === this.store.dragNode) return
             let halfH = (this.store.itemHeight || 26) / 2
-            let gap = e.clientY - this.dom.getBoundingClientRect().top - halfH > 0 ? 1 : -1;
+            let gap = e.clientY - this.dom.getBoundingClientRect().top - halfH > 0 ? 1 : -1
             // console.log(gap);
             // if (gap === this.enterGap) return;
-            this.store.enterGap = gap;
-            removeClass(this.dom);
+            this.store.enterGap = gap
+            removeClass(this.dom)
             if (gap === -1) {
                 // dropNode.classList.add('vs-drag-over-gap-top')
                 this.dom.classList.add('vs-drag-over-node-top')
@@ -650,7 +652,7 @@ export default class Node {
 
         dom.addEventListener('dragenter', (e) => {
             e.stopPropagation()
-            e.preventDefault();
+            e.preventDefault()
             this.store.dropNode && removeClass(this.store.dropNode)
             if (this.store.dragNode === this) {
                 //如果放到自己上面，那么不做处理
@@ -680,18 +682,18 @@ export default class Node {
         })
 
         dom.addEventListener('drop', (e) => {
-            let enterGap = this.store.enterGap;
-            this.store.enterGap = ''
+            let enterGap = this.store.enterGap
+            this.store.enterGap = '';
             removeClass(this.dom)
             removeClass(this.store.dropNode)
-            e.stopPropagation();
+            e.stopPropagation()
             // return ;
             if (!this.store.dropNode) return
             if (this.store.canDrop && typeof this.store.canDrop === 'function' && this.store.canDrop(this.store.dragNode, this) === false) {
                 return false
             }
 
-            if (!this.store.dropable) return;
+            if (!this.store.dropable) return
             //this.store.onDrop(e, this, this.store.dropPostion)
             // console.log(this.store.dragNode,this);
             const dragNode = this.store.dragNode
@@ -733,14 +735,14 @@ export default class Node {
                 // console.log(a);
                 data = a
             }
-            dragNode.remove();
-            if (!data) return;
+            dragNode.remove()
+            if (!data) return
             if (this.isLeaf === false) {
                 if (enterGap === -1) {
-                    this.store.onDrop(e, this.store.dragNode, this);
-                    this.unshift(data);
+                    this.store.onDrop(e, this.store.dragNode, this)
+                    this.unshift(data)
                 } else {
-                    this.store.onDrop(e, this.store.dragNode, this.parent);
+                    this.store.onDrop(e, this.store.dragNode, this.parent)
                     this.parent.insertAfter({ data }, this)
                     this.updateCheckedParent()
                     this.store.updateNodes()
@@ -748,12 +750,12 @@ export default class Node {
 
                 return
             } else if (enterGap === -1) {
-                this.store.onDrop(e, this.store.dragNode, this.parent);
+                this.store.onDrop(e, this.store.dragNode, this.parent)
                 this.parent.insertBefore({ data }, this)
                 this.updateCheckedParent()
                 this.store.updateNodes()
             } else if (enterGap === 1) {
-                this.store.onDrop(e, this.store.dragNode, this.parent);
+                this.store.onDrop(e, this.store.dragNode, this.parent)
                 this.parent.insertAfter({ data }, this)
                 this.updateCheckedParent()
                 this.store.updateNodes()
@@ -831,6 +833,14 @@ export default class Node {
         if (index > -1) {
             children.splice(index, 1)
         }
+        let data=parent.data;
+        if (data&&data.children){
+            // console.log(data.children,this.data,this.id);
+            const childIndex=data.children.findIndex(v=>v.id===this.data.id);
+            if (childIndex>-1) data.children.splice(childIndex,1);
+            // console.log(childIndex);
+        }
+        // console.log(data);
         this.store.updateNodes()
     }
 
