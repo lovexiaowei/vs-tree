@@ -387,7 +387,7 @@ export default class Node {
         }
         child.level = this.level + 1
         if (typeof index === 'undefined' || index < 0) {
-            this.childNodes.push(child);
+            this.childNodes.push(child)
         } else {
             this.childNodes.splice(index, 0, child)
             // this.data.children&&this.data.children.splice(index,0,child.data);
@@ -683,7 +683,7 @@ export default class Node {
 
         dom.addEventListener('drop', (e) => {
             let enterGap = this.store.enterGap
-            this.store.enterGap = '';
+            this.store.enterGap = ''
             removeClass(this.dom)
             removeClass(this.store.dropNode)
             e.stopPropagation()
@@ -739,26 +739,26 @@ export default class Node {
             if (!data) return
             if (this.isLeaf === false) {
                 if (enterGap === -1) {
-                    this.store.onDrop(e, this.store.dragNode, this)
                     this.unshift(data)
+                    this.store.onDrop(e, this.store.dragNode, this)
                 } else {
-                    this.store.onDrop(e, this.store.dragNode, this.parent)
                     this.parent.insertAfter({ data }, this)
                     this.updateCheckedParent()
                     this.store.updateNodes()
+                    this.store.onDrop(e, this.store.dragNode, this.parent)
                 }
 
                 return
             } else if (enterGap === -1) {
-                this.store.onDrop(e, this.store.dragNode, this.parent)
                 this.parent.insertBefore({ data }, this)
                 this.updateCheckedParent()
                 this.store.updateNodes()
+                this.store.onDrop(e, this.store.dragNode, this.parent);
             } else if (enterGap === 1) {
-                this.store.onDrop(e, this.store.dragNode, this.parent)
                 this.parent.insertAfter({ data }, this)
                 this.updateCheckedParent()
                 this.store.updateNodes()
+                this.store.onDrop(e, this.store.dragNode, this.parent)
             }
             // console.log(this.isLeaf,this);
             // if (this.store.dropPostion === -1) {
@@ -833,11 +833,11 @@ export default class Node {
         if (index > -1) {
             children.splice(index, 1)
         }
-        let data=parent.data;
-        if (data&&data.children){
+        let data = parent.data
+        if (data && data.children) {
             // console.log(data.children,this.data,this.id);
-            const childIndex=data.children.findIndex(v=>v.id===this.data.id);
-            if (childIndex>-1) data.children.splice(childIndex,1);
+            const childIndex = data.children.findIndex(v => v.id === this.data.id)
+            if (childIndex > -1) data.children.splice(childIndex, 1)
             // console.log(childIndex);
         }
         // console.log(data);
@@ -861,6 +861,7 @@ export default class Node {
 
     // 添加节点
     append (data) {
+        // debugger;
         if (!data || typeof data !== 'object') return
         let olddom = this.dom
         if (this.childNodes.length !== 0) {
@@ -874,7 +875,9 @@ export default class Node {
         this.isLeaf = false
         if (olddom) {
             delete this.dom
-            olddom.parentNode.replaceChild(this.createNode(), olddom)
+            if (olddom.parentNode){
+                olddom.parentNode.replaceChild(this.createNode(), olddom)
+            }
         }
         node.updateCheckedParent()
         this.store.updateNodes()

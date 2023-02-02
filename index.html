@@ -39,7 +39,7 @@
     for (let i = 0; i <= 1000; i++) {
         data.push({ id: 'a' + i, title: 'data' + i })
     }
-
+    data=[];
     const tree = new VsTree('#tree', {
         data: data,
         virtual: {
@@ -64,7 +64,8 @@
                 isLeaf: !data.children
             }
         }
-    })
+    });
+    tree.append({ id: 4, title: '第4个', isLeaf: false,children: [] });
 </script>
 </body>
 
