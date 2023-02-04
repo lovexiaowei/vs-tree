@@ -50,7 +50,7 @@ export default {
   ],
   plugins: [
     serve({
-      host:'0.0.0.0',
+      host:'127.0.0.1',
       contentBase: '',  //服务器启动的文件夹，默认是项目根目录，需要在该文件下创建index.html
       port: 8020   //端口号，默认10001
     }),

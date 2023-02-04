@@ -45,7 +45,7 @@ export default {
       file: 'dist/vs-tree.js',
       format: 'umd',
       name: 'VsTree',
-      exports: 'named'
+      // exports: 'named'
     }
   ],
   plugins: [
