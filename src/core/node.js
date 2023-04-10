@@ -753,7 +753,7 @@ export default class Node {
                 this.parent.insertBefore({ data }, this)
                 this.updateCheckedParent()
                 this.store.updateNodes()
-                this.store.onDrop(e, this.store.dragNode, this.parent);
+                this.store.onDrop(e, this.store.dragNode, this.parent)
             } else if (enterGap === 1) {
                 this.parent.insertAfter({ data }, this)
                 this.updateCheckedParent()
@@ -875,7 +875,7 @@ export default class Node {
         this.isLeaf = false
         if (olddom) {
             delete this.dom
-            if (olddom.parentNode){
+            if (olddom.parentNode) {
                 olddom.parentNode.replaceChild(this.createNode(), olddom)
             }
         }
@@ -896,7 +896,7 @@ export default class Node {
         this.isLeaf = false
         if (olddom) {
             delete this.dom
-            olddom.parentNode.replaceChild(this.createNode(), olddom)
+            olddom.parentNode && olddom.parentNode.replaceChild(this.createNode(), olddom);
         }
         node.updateCheckedParent()
         this.store.updateNodes()
