@@ -13,7 +13,6 @@ export default class Node {
         this.enterGap = 0
         this.loaded = false
         this.isLeaf = false
-
         this.level = 0
         this.childNodes = []
 
@@ -134,7 +133,7 @@ export default class Node {
                 this.store.contextmenu(e, this)
             }
         })
-        if (this.store.draggable) {
+        if (this.store.draggable&&this.data.draggable!==false) {
             this.createDraggable(dom)
         }
 
