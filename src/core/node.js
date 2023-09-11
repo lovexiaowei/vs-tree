@@ -13,7 +13,6 @@ export default class Node {
         this.enterGap = 0
         this.loaded = false
         this.isLeaf = false
-
         this.level = 0
         this.childNodes = []
 
