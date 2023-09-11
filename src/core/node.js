@@ -134,7 +134,7 @@ export default class Node {
                 this.store.contextmenu(e, this)
             }
         })
-        if (this.store.draggable) {
+        if (this.store.draggable&&this.data.draggable!==false) {
             this.createDraggable(dom)
         }
 

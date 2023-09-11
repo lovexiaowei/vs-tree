@@ -41,16 +41,17 @@
     ]
 
     for (let i = 0; i <= 10; i++) {
-        data.push({ id: 'a' + i, title: 'data' + i })
+        data.push({ id: 'a' + i, title: 'data' + i,draggable:false })
     }
 
     const tree = new VsTree('#tree', {
-        data: [],
+        data: data,
         virtual: {
             showCount: 25,
             itemHeight: 30
         },
-
+        maxHeight:400,
+        minHeight:400,
         showCheckbox: true,
         max: 0,
         highlightCurrent: false,
@@ -67,6 +68,9 @@
             if (['1111','a2'].indexOf(data.id)===-1) return  false;
               return [node];
         },
+        contextmenu:function (){
+            console.log('abc');
+        },
         format: function (data) {
             return {
                 parentId: data.pid || 0,
@@ -77,12 +81,12 @@
         }
     });
 
-    document.getElementById('go').addEventListener('input', (e) => {
-        tree.filter(e.target.value)
-    });
-    tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
-    let node1=tree.getNodeById(4);
-    node1.append({ id: 411, title: '第422个', isLeaf: false,children: [] });
+    // document.getElementById('go').addEventListener('input', (e) => {
+    //     tree.filter(e.target.value)
+    // });
+    // tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
+    // let node1=tree.getNodeById(4);
+    // node1.append({ id: 411, title: '第422个', isLeaf: false,children: [] });
 </script>
 </body>
 
