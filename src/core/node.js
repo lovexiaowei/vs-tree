@@ -830,13 +830,16 @@ export default class Node {
         const children = parent.childNodes || []
         const index = children.findIndex(d => d.id === this.id)
         if (index > -1) {
+            this.store.dataMap.delete(this.data.id);
             children.splice(index, 1)
         }
         let data = parent.data
         if (data && data.children) {
             // console.log(data.children,this.data,this.id);
             const childIndex = data.children.findIndex(v => v.id === this.data.id)
-            if (childIndex > -1) data.children.splice(childIndex, 1)
+            if (childIndex > -1) {
+                data.children.splice(childIndex, 1);
+            }
             // console.log(childIndex);
         }
         // console.log(data);
