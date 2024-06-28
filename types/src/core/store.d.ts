@@ -1,5 +1,6 @@
 export default class TreeStore {
     constructor(options: any);
+    selectManager: Select;
     nodes: any[];
     dataMap: Map<any, any>;
     nodeMap: Map<any, any>;
@@ -17,4 +18,5 @@ export default class TreeStore {
     allowEmit(check: any, type: any): boolean;
     _checkVerify(node: any): any;
 }
+import Select from "./select";
 import Node from "./node";

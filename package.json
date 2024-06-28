@@ -6,6 +6,12 @@
     "type": "git",
     "url": "https://github.com/yangjingyu/vs-tree"
   },
+  "eslintConfig": {
+    "root": true,
+    "rules": {
+      "indent": "off"
+    }
+  },
   "homepage": "https://yangjingyu.github.io/vs-tree/",
   "bugs": "https://github.com/yangjingyu/vs-tree/issues",
   "author": {

@@ -1,4 +1,6 @@
 import Node from './node'
+import Select from './select'
+
 export default class TreeStore {
   constructor (options) {
     for (const option in options) {
@@ -6,19 +8,16 @@ export default class TreeStore {
         this[option] = options[option]
       }
     }
-
+    this.selectManager = new Select(this)
     this.nodes = []
-
     this.dataMap = new Map()
     this.nodeMap = new Map()
-
     // 当前选中节点
     this.radioMap = {}
     // 当前展开节点
     this.expandMap = {}
     this.root = new Node({
-      data: this.data,
-      store: this
+      data: this.data, store: this
     })
     this.updateNodes()
 
@@ -36,13 +35,13 @@ export default class TreeStore {
 
   // 更新节点列表
   updateNodes () {
-    this.nodes = this.flattenTreeData();
+    this.nodes = this.flattenTreeData()
     this.nodesChange(this.nodes)
   }
 
   // 获取节点列表
   flattenTreeData () {
-    const nodes = [];
+    const nodes = []
     const dig = (val) => {
       nodes.push(val)
       if (val.childNodes && val.childNodes.length) {
