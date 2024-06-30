@@ -49,6 +49,7 @@ export default class Node {
     createAnimation(): void;
     transitionNode: HTMLDivElement | undefined;
     createDraggable(dom: any): void;
+    handleLastDrop(dragNode: any, enterGap: any): void;
     setAccordion(expand: any): void;
     loadData(callback: any): void;
     loading: boolean | undefined;

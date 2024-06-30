@@ -34,14 +34,14 @@
     }
 
     let data = [
-        { id: 1, title: '第1个', isLeaf: false, childrens: [{ id: 11, title: '1-1', pid: 1 }] },
-        { id: '2', title: '第2个', isLeaf: false,children: [{ id: 111, title: '2-1', pid: 2 }] },
-        { id: '3', title: '第3个', isLeaf: false,children: [{ id: '1111', title: '3-1', pid: 3 }] },
+        { id: 1, title: '第1个', isLeaf: false, childrens: [{ id: 11, title: '1-1', pid: '1' }] },
+        { id: '2', title: '第2个', isLeaf: false,children: [{ id: 111, title: '2-1', pid: '2' }] },
+        { id: '3', title: '第3个', isLeaf: false,children: [{ id: '1111', title: '3-1', pid: '3' }] },
         { id: 4, title: '第4个', isLeaf: false,children: [] },
     ]
 
     for (let i = 0; i <= 2; i++) {
-        data.push({ id: 'a' + i, title: 'data' + i,draggable:true })
+        //data.push({ id: 'a' + i, title: 'data' + i,draggable:true })
     }
 
     const tree = new VsTree('#tree', {
@@ -50,6 +50,7 @@
             showCount: 25,
             itemHeight: 30
         },
+        multiDrag:true,
         maxHeight:400,
         minHeight:400,
         showCheckbox: true,
@@ -60,7 +61,8 @@
         dropable: true,
         draggable: true,
         onDrop: function (e, dragNode, dropNode) {
-            console.log(arguments)
+            console.log(e.dataTransfer.getData('node'));
+            window.e2=e;
         },
         searchFilter:function (keyword,node,data){
             // console.log(keyword,node,data);
@@ -73,6 +75,7 @@
         },
         format: function (data) {
             return {
+                id:data.id.toString(),
                 parentId: data.pid || 0,
                 name: data.title,
                 children: data.children,

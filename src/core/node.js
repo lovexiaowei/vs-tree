@@ -107,8 +107,7 @@ export default class Node {
         }
         dom.classList.add('selected')
       }
-
-      if (shiftKey || ctrlKey) {
+      if (this.store.multiDrag && (shiftKey || ctrlKey)) {
         if (ctrlKey) {
           this.store.selectManager.addNode(this)
         }
@@ -601,14 +600,14 @@ export default class Node {
       tg.style.height = animatHeight
       setTimeout(() => {
         tg.style.height = 0
-      }, 0);
+      }, 0)
     }
 
     const transend = () => {
-      tg.removeEventListener('transitionend', transend);
-      tg.parentNode && tg.parentNode.removeChild(tg);
-      tg.removeEventListener('transitionend', transend);
-      this.store.update();
+      tg.removeEventListener('transitionend', transend)
+      tg.parentNode && tg.parentNode.removeChild(tg)
+      tg.removeEventListener('transitionend', transend)
+      this.store.update()
     }
 
     tg.addEventListener('transitionend', transend)
@@ -623,7 +622,7 @@ export default class Node {
       e.stopPropagation()
       if (!this.store.selectManager.has(this)) {
         //如果拖动了，不是多选的项目，那么要清空;
-        this.store.selectManager.clear();
+        this.store.selectManager.clear()
       }
       this.store.dragNode = this
       this.store.onDragstart(e, this)
@@ -631,7 +630,10 @@ export default class Node {
       try {
         // setData is required for draggable to work in FireFox
         // the content has to be '' so dragging a node out of the tree won't open a new tab in FireFox
-        e.dataTransfer && e.dataTransfer.setData('text/plain', '')
+        if (e.dataTransfer) {
+          e.dataTransfer.setData('text/plain', '')
+          e.dataTransfer.setData('node', JSON.stringify(this.data))
+        }
       } catch (e) {
 
       }
@@ -697,83 +699,78 @@ export default class Node {
     dom.addEventListener('drop', (e) => {
       const enterGap = this.store.enterGap
       this.store.enterGap = ''
-      removeClass(this.dom);
+      removeClass(this.dom)
       removeClass(this.store.dropNode)
-      e.stopPropagation();
+      e.stopPropagation()
       // this.store.selectManager.clear();
-      if (!this.store.dropNode) return;
-      if (!this.store.dropable) return;
-      if (this.store.canDrop && typeof this.store.canDrop === 'function' && this.store.canDrop(this.store.dragNode, this,this.store.selectManager.list) === false) {
+      if (!this.store.dropNode) return
+      if (!this.store.dropable) return
+      if (this.store.canDrop && typeof this.store.canDrop === 'function' && this.store.canDrop(this.store.dragNode, this, this.store.selectManager.getTrueDrag()) === false) {
         return false
       }
       // this.store.onDrop(e, this, this.store.dropPostion)
       // console.log(this.store.dragNode,this);
-      const dragNode = this.store.dragNode;
-      if (!dragNode || !this.parent) return;
-      if (this.store.selectManager.list.length){
-        console.log('has mul  drag');
+      const dragNode = this.store.dragNode
+      if (!dragNode || !this.parent) return
+      if (this.store.selectManager.list.length) {
+        // console.log('has mul  dra22222222g')
+        let nodes = this.store.selectManager.getTrueDrag()
+        nodes.map(v => this.handleLastDrop(v, enterGap))
+        this.store.onDrop(e, dragNode, nodes, this.parent, nodes)
+      } else {
+        this.handleLastDrop(dragNode, enterGap)
+        this.store.onDrop(e, dragNode, this.parent, [dragNode])
       }
 
-      const son = []
-
-      function dig (node) {
-        node.map(v => {
-          son.push(v.data.id)
-          if (v.childNodes && v.childNodes.length) {
-            dig(v.childNodes)
-          }
-        })
-      }
-
-      dig(dragNode.childNodes)
-      if (son.indexOf(this.data.id) > -1) {
-        return
-      }
-      let data = Object.assign({}, dragNode.data)
-      if (dragNode.childNodes) {
-        const a = dragNode.data
-        if (dragNode.indeterminate === true) {
-          a.indeterminate = true
-        } else {
-          if (dragNode.checked === true) a.checked = true
-        }
-        if (dragNode.childNodes && dragNode.childNodes.length) {
-          a.children = []
-        }
-        dragNode.childNodes.map(v => {
-          if (v.indeterminate === true) {
-            v.data.indeterminate = true
-          } else {
-            if (v.checked === true) v.data.checked = true
-          }
-          a.children.push(v.data)
-        })
-        // console.log(a);
-        data = a
-      }
-      dragNode.remove()
-      if (!data) return
-      if (this.isLeaf === false) {
-        if (enterGap === -1) {
-          this.unshift(data)
-          this.store.onDrop(e, this.store.dragNode, this)
-        } else {
-          this.parent.insertAfter({ data }, this)
-          this.updateCheckedParent()
-          this.store.updateNodes()
-          this.store.onDrop(e, this.store.dragNode, this.parent)
-        }
-      } else if (enterGap === -1) {
-        this.parent.insertBefore({ data }, this)
-        this.updateCheckedParent()
-        this.store.updateNodes()
-        this.store.onDrop(e, this.store.dragNode, this.parent)
-      } else if (enterGap === 1) {
-        this.parent.insertAfter({ data }, this)
-        this.updateCheckedParent()
-        this.store.updateNodes()
-        this.store.onDrop(e, this.store.dragNode, this.parent)
-      }
+      // const son = this.store.selectManager.dig(dragNode.childNodes)
+      // if (son.indexOf(this.id) > -1) {
+      //   return
+      // }
+      // let data = Object.assign({}, dragNode.data)
+      // if (dragNode.childNodes) {
+      //   const a = dragNode.data
+      //   if (dragNode.indeterminate === true) {
+      //     a.indeterminate = true
+      //   } else {
+      //     if (dragNode.checked === true) a.checked = true
+      //   }
+      //   if (dragNode.childNodes && dragNode.childNodes.length) {
+      //     a.children = []
+      //   }
+      //   dragNode.childNodes.map(v => {
+      //     if (v.indeterminate === true) {
+      //       v.data.indeterminate = true
+      //     } else {
+      //       if (v.checked === true) v.data.checked = true
+      //     }
+      //     a.children.push(v.data)
+      //   })
+      //   // console.log(a);
+      //   data = a
+      // }
+      // dragNode.remove()
+      // if (!data) return
+      // if (this.isLeaf === false) {
+      //   if (enterGap === -1) {
+      //     this.unshift(data)
+      //     this.store.onDrop(e, dragNode, this)
+      //   } else {
+      //     this.parent.insertAfter({ data }, this)
+      //     this.updateCheckedParent()
+      //     this.store.updateNodes()
+      //     this.store.onDrop(e, dragNode, this.parent)
+      //   }
+      // } else if (enterGap === -1) {
+      //   this.parent.insertBefore({ data }, this)
+      //   this.updateCheckedParent()
+      //   this.store.updateNodes()
+      //   this.store.onDrop(e, dragNode, this.parent)
+      // } else if (enterGap === 1) {
+      //   this.parent.insertAfter({ data }, this)
+      //   this.updateCheckedParent()
+      //   this.store.updateNodes()
+      //   this.store.onDrop(e, dragNode, this.parent)
+      // }
       // console.log(this.isLeaf,this);
       // if (this.store.dropPostion === -1) {
       //     this.parent.insertBefore({ data }, this)
@@ -787,6 +784,58 @@ export default class Node {
       //     this.append(data)
       // }
     })
+  }
+
+  handleLastDrop (dragNode, enterGap) {
+    const son = this.store.selectManager.dig(dragNode.childNodes || [])
+    if (son.indexOf(this.id) > -1) {
+      return
+    }
+    let data = Object.assign({}, dragNode.data)
+    if (dragNode.childNodes) {
+      const a = dragNode.data
+      if (dragNode.indeterminate === true) {
+        a.indeterminate = true
+      } else {
+        if (dragNode.checked === true) a.checked = true
+      }
+      if (dragNode.childNodes && dragNode.childNodes.length) {
+        a.children = []
+      }
+      dragNode.childNodes.map(v => {
+        if (v.indeterminate === true) {
+          v.data.indeterminate = true
+        } else {
+          if (v.checked === true) v.data.checked = true
+        }
+        a.children.push(v.data)
+      })
+      // console.log(a);
+      data = a
+    }
+    dragNode.remove()
+    if (!data) return
+    if (this.isLeaf === false) {
+      if (enterGap === -1) {
+        this.unshift(data)
+        // this.store.onDrop(e, dragNode, this)
+      } else {
+        this.parent.insertAfter({ data }, this)
+        this.updateCheckedParent()
+        this.store.updateNodes()
+        // this.store.onDrop(e, dragNode, this.parent)
+      }
+    } else if (enterGap === -1) {
+      this.parent.insertBefore({ data }, this)
+      this.updateCheckedParent()
+      this.store.updateNodes()
+      // this.store.onDrop(e, dragNode, this.parent)
+    } else if (enterGap === 1) {
+      this.parent.insertAfter({ data }, this)
+      this.updateCheckedParent()
+      this.store.updateNodes()
+      // this.store.onDrop(e, dragNode, this.parent)
+    }
   }
 
   // 更新手风琴状态

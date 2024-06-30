@@ -6,5 +6,7 @@ export default class Select {
     shiftAdd(node: any, pre: any): void;
     has(node: any): boolean;
     moveTo(node: any): void;
+    getTrueDrag(): any[];
+    dig(nodes: any): any[];
     clear(): void;
 }
