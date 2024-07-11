@@ -11,6 +11,9 @@ export default class Vlist {
     getClientSize(): number;
     getScrollSize(): number;
     scrollToIndex(index: any): void;
+    scrollToNode(node: any): true | undefined;
+    scrollToBottom(): void;
+    scrollToOffset(offset: any): void;
     reset(): void;
     installVirtual(): void;
     virtual: Virtual | undefined;

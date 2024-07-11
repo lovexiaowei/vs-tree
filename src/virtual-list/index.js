@@ -29,7 +29,6 @@ export default class Vlist {
     this.estimateSize = opts.estimateSize || 26
 
     this.dataKey = 'id'
-
     this.installVirtual()
   }
 
@@ -59,6 +58,62 @@ export default class Vlist {
     } else {
       const offset = this.virtual.getOffset(index)
       this.scrollToOffset(offset)
+    }
+  }
+
+  scrollToNode (node) {
+    if (!node) return
+    let index = this.dataSources.findIndex(v => node === v)
+    if (index === -1) {
+      //如果是-1，表示没有获取到，此时表示这个node没有显示，比如在
+      let p = []
+      let tmp = node
+      for (let i = 0; i <= 20; i++) {
+        //这里使用循环，假设最多有20级
+        if (tmp.parent) {
+          tmp = tmp.parent
+          if (tmp.data._vsroot) break
+          p.unshift(tmp)
+        } else {
+          break
+        }
+      }
+      p.map(v => v.setExpand(true))
+      index = this.dataSources.findIndex(v => node === v)
+      if (index === -1) return
+      setTimeout(()=>{
+        this.scrollToOffset(index * this.estimateSize);
+      },10);
+    } else {
+      this.scrollToOffset(index * this.estimateSize)
+    }
+    return true
+  }
+
+  scrollToBottom () {
+    let dom = this.$el
+    if (!dom) return
+    const offset = dom.scrollTop
+    this.scrollToOffset(offset)
+
+    // check if it's really scrolled to the bottom
+    // maybe list doesn't render and calculate to last range
+    // so we need retry in next event loop until it really at bottom
+    setTimeout(() => {
+      if (this.getOffset() + this.getClientSize() + 1 < this.getScrollSize()) {
+        this.scrollToBottom()
+      }
+    }, 3)
+  }
+
+  scrollToOffset (offset) {
+    if (this.pageMode) {
+      document.body[this.directionKey] = offset
+      document.documentElement[this.directionKey] = offset
+    } else {
+      let root = this.$el
+      if (!root) return
+      root.scrollTop = offset
     }
   }
 

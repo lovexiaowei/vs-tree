@@ -261,6 +261,12 @@ export default class Tree {
     return this.store.getCheckedNodes()
   }
 
+  save(){
+
+  }
+  restore(){
+
+  }
   // 设置最大可选
   setMaxValue (value = 0) {
     this.store.max = value
@@ -269,5 +275,8 @@ export default class Tree {
   // 滚动到索引位置
   scrollToIndex (index = 0) {
     this.vlist.scrollToIndex(index)
+  }
+  scrollToNode(node){
+    this.vlist.scrollToNode(node);
   }
 }

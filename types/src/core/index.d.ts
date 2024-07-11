@@ -24,8 +24,11 @@ export default class Tree {
     unshift(data: any): void;
     getNodeById(id: any): any;
     getCheckedNodes(): any[];
+    save(): void;
+    restore(): void;
     setMaxValue(value?: number): void;
     scrollToIndex(index?: number): void;
+    scrollToNode(node: any): void;
 }
 import Breadcrumb from "../breadcrumb";
 import TreeStore from "./store";

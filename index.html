@@ -9,11 +9,11 @@
 <style>
     #tree {
         margin-top: 10px;
-        min-height: 250px;
+        height: 250px;
     }
 
     .vs-tree-node {
-        height: 30px;
+        height: 100px;
     }
 </style>
 <body>
@@ -50,51 +50,7 @@
     data.data.risks.map(v => {
       treeData.push(Object.assign({}, v, { title: v.name,pid: 'gisFields_' + v.gisFieldOnlycode }))
     });
-    console.log(treeData);
     treeData=loop(treeData);
-    tree=new VsTree('#tree', {
-      data: treeData,
-      virtual: {
-        showCount: 25,
-        itemHeight: 30
-      },
-      multiDrag: true,
-      maxHeight: 400,
-      minHeight: 400,
-      showCheckbox: true,
-      max: 0,
-      highlightCurrent: false,
-      indent: 20, // 缩进
-      // lazy: true,
-      dropable: true,
-      draggable: true,
-      onDrop: function (e, dragNode, dropNode, nodes) {
-        console.log(dragNode, dropNode, nodes)
-        // console.log(e.dataTransfer.getData('node'));
-        // window.e2=e;
-      },
-      searchFilter: function (keyword, node, data) {
-        if (typeof keyword === 'undefined' || keyword === '') return true
-        if (data._vsroot) return true
-        console.log(keyword, node, data)
-        return true
-        // console.log(data);
-        // if (['1111','a2'].indexOf(data.id)===-1) return  false;
-        //   return [node];
-      },
-      contextmenu: function () {
-        console.log('abc')
-      },
-      format: function (data) {
-        return {
-          id: data.id.toString(),
-          parentId: data.pid || 0,
-          name: data.title,
-          children: data.children,
-          isLeaf: !data.children
-        }
-      }
-    })
   });
   var id = 1000
 
@@ -112,13 +68,64 @@
     { id: '3', title: '第3个', isLeaf: false, children: [{ id: '1111', title: '3-1', pid: '3' }] },
     { id: 4, title: '第4个', isLeaf: false, children: [] }
   ]
-
-  for (let i = 0; i <= 2; i++) {
-    //data.push({ id: 'a' + i, title: 'data' + i,draggable:true })
+  data[1].children[0].children=[{ id: 'son2', title: '199-data',draggable:true }];
+  for (let i = 0; i <= 200; i++) {
+    let a1={ id: 'aa' + i, title: 'data' + i,draggable:true };
+    data.push(a1);
+    if (i===199){
+      a1.isLeaf=false;
+      a1.children=[{ id: 'son1', title: '199-data' + i,draggable:true }];
+    }
   }
 
   let searchData = {}
 
+  tree=new VsTree('#tree', {
+    data: data,
+    virtual: {
+      showCount: 25,
+      itemHeight: 100
+    },
+    multiDrag: true,
+    maxHeight: 400,
+    minHeight: 400,
+    showCheckbox: true,
+    max: 0,
+    highlightCurrent: false,
+    indent: 20, // 缩进
+    // lazy: true,
+    dropable: true,
+    draggable: true,
+    onDrop: function (e, dragNode, dropNode, nodes) {
+      console.log(dragNode, dropNode, nodes)
+      // console.log(e.dataTransfer.getData('node'));
+      // window.e2=e;
+    },
+    ssearchFilter: function (keyword, node, data) {
+      if (typeof keyword === 'undefined' || keyword === '') return true
+      if (data._vsroot) return true
+      // console.log(keyword, node, data)
+      return true
+      // console.log(data);
+      // if (['1111','a2'].indexOf(data.id)===-1) return  false;
+      //   return [node];
+    },
+    click:function (e,node){
+      console.log(node);
+    },
+    contextmenu: function () {
+      // console.log('abc')
+    },
+    format: function (data) {
+      return {
+        id: data.id.toString(),
+        parentId: data.pid || 0,
+        name: data.title,
+        children: data.children,
+        isLeaf: !data.children
+      }
+    }
+  })
 
   // document.getElementById('go').addEventListener('input', (e) => {
   //     tree.filter(e.target.value)
