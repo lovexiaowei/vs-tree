@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>vs-tree2.0_格式化数据</title>
-    <link rel='stylesheet' href='dist/vs-tree.css'>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>vs-tree2.0_格式化数据</title>
+  <link rel='stylesheet' href='dist/vs-tree.css'>
 </head>
 <style>
     #tree {
@@ -18,84 +18,137 @@
 </style>
 <body>
 <div>
-    <input type="text" id="go">
+  <input type='text' id='go'>
 </div>
 <div id='tree'></div>
 <script src='dist/vs-tree.js'></script>
 <script>
-    var id = 1000
-
-    function add (parentId, name) {
-        const list = []
-        for (var i = 0; i < 100; i++) {
-            list.push({ id: '100' + id++, title: name + i, parentId: parentId })
-        }
-        return list
-    }
-
-    let data = [
-        { id: 1, title: '第1个', isLeaf: false, childrens: [{ id: 11, title: '1-1', pid: '1' }] },
-        { id: '2', title: '第2个', isLeaf: false,children: [{ id: 111, title: '2-1', pid: '2' }] },
-        { id: '3', title: '第3个', isLeaf: false,children: [{ id: '1111', title: '3-1', pid: '3' }] },
-        { id: 4, title: '第4个', isLeaf: false,children: [] },
-    ]
-
-    for (let i = 0; i <= 2; i++) {
-        //data.push({ id: 'a' + i, title: 'data' + i,draggable:true })
-    }
-
-    const tree = new VsTree('#tree', {
-        data: data,
-        virtual: {
-            showCount: 25,
-            itemHeight: 30
-        },
-        multiDrag:true,
-        maxHeight:400,
-        minHeight:400,
-        showCheckbox: true,
-        max: 0,
-        highlightCurrent: false,
-        indent: 20, // 缩进
-        // lazy: true,
-        dropable: true,
-        draggable: true,
-        onDrop: function (e, dragNode, dropNode) {
-            console.log(e.dataTransfer.getData('node'));
-            window.e2=e;
-        },
-        searchFilter:function (keyword,node,data){
-            // console.log(keyword,node,data);
-            // console.log(data);
-            if (['1111','a2'].indexOf(data.id)===-1) return  false;
-              return [node];
-        },
-        contextmenu:function (){
-            console.log('abc');
-        },
-        format: function (data) {
-            return {
-                id:data.id.toString(),
-                parentId: data.pid || 0,
-                name: data.title,
-                children: data.children,
-                isLeaf: !data.children
-            }
-        }
+  let tree;
+  fetch('dist/data.json').then(r => r.json()).then(data => {
+    // console.log(data)
+    let treeData = []
+    data.data.regions.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.gisRegionName, pid: '0' }))
+    })
+    data.data.areas.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.gisRegionName, pid: 'gisRegion_' + v.gisRegionId }))
+    });
+    data.data.fields.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.gisFieldName, pid: 'gisAreas_' + v.gisAreaOnlycode }))
+    });
+    data.data.bpns.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.bpnName, pid: 'gisFields_' + v.gisFieldOnlycode }))
     });
 
-    // document.getElementById('go').addEventListener('input', (e) => {
-    //     tree.filter(e.target.value)
-    // });
-    // tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
-    // let node1=tree.getNodeById(4);
-    // node1.append({ id: 411, title: '第422个', isLeaf: false,children: [] });
-    document.getElementById('go').addEventListener('input', (e) => {
-        tree.filter(e.target.value)
+    data.data.lands.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.name, pid: 'gisFields_' + v.gisFieldOnlycode }))
     });
-    // tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
-    // let node1=tree.getNodeById(4);
-    // node1.append({ id: 411, title: '第422个',draggable:false, isLeaf: false,children: [] });
+
+    data.data.pipes.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.name, pid: 'bpn_' + v.bpnOnlycode }))
+    });
+    data.data.risks.map(v => {
+      treeData.push(Object.assign({}, v, { title: v.name,pid: 'gisFields_' + v.gisFieldOnlycode }))
+    });
+    console.log(treeData);
+    treeData=loop(treeData);
+    tree=new VsTree('#tree', {
+      data: treeData,
+      virtual: {
+        showCount: 25,
+        itemHeight: 30
+      },
+      multiDrag: true,
+      maxHeight: 400,
+      minHeight: 400,
+      showCheckbox: true,
+      max: 0,
+      highlightCurrent: false,
+      indent: 20, // 缩进
+      // lazy: true,
+      dropable: true,
+      draggable: true,
+      onDrop: function (e, dragNode, dropNode, nodes) {
+        console.log(dragNode, dropNode, nodes)
+        // console.log(e.dataTransfer.getData('node'));
+        // window.e2=e;
+      },
+      searchFilter: function (keyword, node, data) {
+        if (typeof keyword === 'undefined' || keyword === '') return true
+        if (data._vsroot) return true
+        console.log(keyword, node, data)
+        return true
+        // console.log(data);
+        // if (['1111','a2'].indexOf(data.id)===-1) return  false;
+        //   return [node];
+      },
+      contextmenu: function () {
+        console.log('abc')
+      },
+      format: function (data) {
+        return {
+          id: data.id.toString(),
+          parentId: data.pid || 0,
+          name: data.title,
+          children: data.children,
+          isLeaf: !data.children
+        }
+      }
+    })
+  });
+  var id = 1000
+
+  function add (parentId, name) {
+    const list = []
+    for (var i = 0; i < 100; i++) {
+      list.push({ id: '100' + id++, title: name + i, parentId: parentId })
+    }
+    return list
+  }
+
+  let data = [
+    { id: 1, title: '第1个', isLeaf: false, childrens: [{ id: 11, title: '1-1', pid: '1' }] },
+    { id: '2', title: '第2个', isLeaf: false, children: [{ id: 111, title: '2-1', pid: '2' }] },
+    { id: '3', title: '第3个', isLeaf: false, children: [{ id: '1111', title: '3-1', pid: '3' }] },
+    { id: 4, title: '第4个', isLeaf: false, children: [] }
+  ]
+
+  for (let i = 0; i <= 2; i++) {
+    //data.push({ id: 'a' + i, title: 'data' + i,draggable:true })
+  }
+
+  let searchData = {}
+
+
+  // document.getElementById('go').addEventListener('input', (e) => {
+  //     tree.filter(e.target.value)
+  // });
+  // tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
+  // let node1=tree.getNodeById(4);
+  // node1.append({ id: 411, title: '第422个', isLeaf: false,children: [] });
+  document.getElementById('go').addEventListener('input', (e) => {
+    let v = e.target.value
+    if (v) {
+      tree.filter(v)
+    } else {
+      tree.filter()
+    }
+  })
+
+  // tree.unshift({ id: 4, title: '第4个', isLeaf: false,children: [] });
+  // let node1=tree.getNodeById(4);
+  // node1.append({ id: 411, title: '第422个',draggable:false, isLeaf: false,children: [] });
+  function loop (data, id = 'id', pid = 'pid', start_id = '0') {
+    let tree = []
+    for (let v of data) {
+      if (v[pid] + '' === start_id + '') {
+        v['children'] = loop(data, id, pid, v[id])
+        tree.push(v)
+      }
+    }
+    return tree
+  }
+
 </script>
 </body>
 

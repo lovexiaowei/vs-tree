@@ -18,5 +18,5 @@ export default class TreeStore {
     allowEmit(check: any, type: any): boolean;
     _checkVerify(node: any): any;
 }
-import Select from "./select";
-import Node from "./node";
+import Select from "./select.js";
+import Node from "./node.js";

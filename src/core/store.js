@@ -1,5 +1,6 @@
-import Node from './node'
-import Select from './select'
+import Node from './node.js'
+import Select from './select.js'
+
 
 export default class TreeStore {
   constructor (options) {

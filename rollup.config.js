@@ -11,7 +11,7 @@ import resolve from '@rollup/plugin-node-resolve'
 
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
-
+// import writeC from './writeC'
 const isDev = process.env.NODE_ENV !== 'production'
 
 const postcssPlugin = [

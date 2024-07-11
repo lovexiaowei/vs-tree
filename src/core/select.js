@@ -13,7 +13,11 @@ export default class Select {
       this.list.push(node)
     } else {
       node.dom && node.dom.classList.remove('selected')
-      this.list.splice(has, 1)
+      let son = this.dig(node.childNodes || []);
+      this.list.splice(has, 1);
+      this.list = this.list.filter(v => {
+        return son.indexOf(v.id) === -1
+      })
     }
   }
 
@@ -29,13 +33,14 @@ export default class Select {
     //那么要求出当前和最后一次单击的那个对象,比较一次顺序
     let startIndex = this.store.nodes.findIndex(v => {
       return v.id === node.id
-    })
-    let endNode = this.list[this.list.length - 1]
+    });
+    // let endNode = this.list[this.list.length - 1]
+    let endNode = this.list[0]
     if (!endNode) return
     let endIndex = this.store.nodes.findIndex(v => {
       return v.id === endNode.id
     })
-    this.list.push(node)
+    this.list.push(node);
     this.clear()
     if (startIndex === -1 || endIndex === -1 || startIndex === endIndex) {
       return
@@ -59,16 +64,16 @@ export default class Select {
 
   //获取真正要拖动的元素,在多选的时候，比如选择了 a 如果把a-1 也选择了，那么要去掉a-1;只认上级
   getTrueDrag () {
-    let idsMapping = {};
+    let idsMapping = {}
     //先求出当前的多选包含的子集
     this.list.map(v => {
-      if (v.childNodes&&v.childNodes.length){
-        this.dig(v.childNodes).map(id=>{
-          idsMapping[id]=1;
-        });
+      if (v.childNodes && v.childNodes.length) {
+        this.dig(v.childNodes).map(id => {
+          idsMapping[id] = 1
+        })
       }
-    });
-    return  this.list.filter(v=>!idsMapping[v.id]);
+    })
+    return this.list.filter(v => !idsMapping[v.id])
   }
 
   //注意，这个dig 方法返回的是node.id ,并不是data.data.id ,这两个值是不一样的，node.id 是系统的一个自增主键。data.data.id 是用户的数据

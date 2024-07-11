@@ -80,6 +80,9 @@ export default class Node {
       this.checkboxNode && (this.checkboxNode.checked = this.checked)
       this.radioNode && (this.radioNode.checked = this.checked)
       if (this.indeterminate) this.dom.classList.add('is-indeterminate')
+      if (this.dom.classList.contains('selected') && !this.store.selectManager.has(this)) {
+        this.dom.classList.remove('selected')
+      }
       return this.dom
     }
 
@@ -87,6 +90,9 @@ export default class Node {
     dom.className = 'vs-tree-node'
     dom.setAttribute('vs-index', this.id)
     if (this.indeterminate) dom.classList.add('is-indeterminate')
+    if (this.store.selectManager.has(this)) {
+      dom.classList.add('selected')
+    }
     !this.isLeaf && this.childNodes.length && dom.setAttribute('vs-child', true)
     dom.appendChild(this.createInner())
 
@@ -714,12 +720,29 @@ export default class Node {
       if (!dragNode || !this.parent) return
       if (this.store.selectManager.list.length) {
         // console.log('has mul  dra22222222g')
+        if (this.store.selectManager.has(this)) {
+          return
+        }
         let nodes = this.store.selectManager.getTrueDrag()
         nodes.map(v => this.handleLastDrop(v, enterGap))
-        this.store.onDrop(e, dragNode, nodes, this.parent, nodes)
+        if (enterGap === -1 && this.isLeaf === false) {
+          this.store.onDrop(e, dragNode, this, nodes)
+        } else {
+          this.store.onDrop(e, dragNode, this.parent, nodes)
+        }
       } else {
+        const son = this.store.selectManager.dig(dragNode.childNodes || [])
+        if (son.indexOf(this.id) > -1) {
+          return
+        }
+
         this.handleLastDrop(dragNode, enterGap)
-        this.store.onDrop(e, dragNode, this.parent, [dragNode])
+        if (enterGap === -1 && this.isLeaf === false) {
+          this.store.onDrop(e, dragNode, this, [dragNode])
+        } else {
+          this.store.onDrop(e, dragNode, this.parent, [dragNode])
+        }
+        // this.store.onDrop(e, dragNode, this.parent, [dragNode])
       }
 
       // const son = this.store.selectManager.dig(dragNode.childNodes)
@@ -787,10 +810,6 @@ export default class Node {
   }
 
   handleLastDrop (dragNode, enterGap) {
-    const son = this.store.selectManager.dig(dragNode.childNodes || [])
-    if (son.indexOf(this.id) > -1) {
-      return
-    }
     let data = Object.assign({}, dragNode.data)
     if (dragNode.childNodes) {
       const a = dragNode.data
