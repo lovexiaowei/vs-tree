@@ -15,6 +15,7 @@ export default class TreeStore {
     setDefaultChecked(): void;
     checkMaxNodes(node: any): boolean;
     getUnCheckLeafsCount(node: any): number;
+    getSelectedNodes(filter: any): any[];
     allowEmit(check: any, type: any): boolean;
     _checkVerify(node: any): any;
 }

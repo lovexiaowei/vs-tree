@@ -13,7 +13,7 @@
     }
 
     .vs-tree-node {
-        height: 100px;
+        height: 30px;
     }
 </style>
 <body>
@@ -24,33 +24,81 @@
 <script src='dist/vs-tree.js'></script>
 <script>
   let tree;
-  fetch('dist/data.json').then(r => r.json()).then(data => {
-    // console.log(data)
-    let treeData = []
-    data.data.regions.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.gisRegionName, pid: '0' }))
+  fetch('dist/t.json').then(r => r.json()).then(data => {
+    console.log(data)
+    // let treeData = [];
+    // data.data.regions.map(v => {
+    //   treeData.push(Object.assign({}, v, {id:'gisRegion_'+v.gisRegionId, title: v.gisRegionName, pid: '0' }))
+    // })
+    // data.data.areas.map(v => {
+    //   treeData.push(Object.assign({}, v, {id:'gisAreas_'+v.gisAreaId, title: v.gisAreaName, pid: 'gisRegion_' + v.gisRegionId }))
+    // });
+    // data.data.fields.map(v => {
+    //   treeData.push(Object.assign({}, v, {id:'gisFields_'+v.gisAreaOnlycode, title: v.gisFieldName, pid: 'gisAreas_' + v.gisAreaOnlycode }))
+    // });
+    // data.data.bpns.map(v => {
+    //   treeData.push(Object.assign({}, v, { title: v.bpnName, pid: 'gisFields_' + v.gisFieldOnlycode }))
+    // });
+    //
+    // data.data.lands.map(v => {
+    //   treeData.push(Object.assign({}, v, { title: v.name, pid: 'gisFields_' + v.gisFieldOnlycode }))
+    // });
+    //
+    // data.data.pipes.map(v => {
+    //   treeData.push(Object.assign({}, v, { title: v.name, pid: 'bpn_' + v.bpnOnlycode }))
+    // });
+    // data.data.risks.map(v => {
+    //   treeData.push(Object.assign({}, v, { title: v.name,pid: 'gisFields_' + v.gisFieldOnlycode }))
+    // });
+    // treeData=loop(data);
+    treeData=data;
+    tree=new VsTree('#tree', {
+      data: treeData,
+      virtual: {
+        showCount: 25,
+        itemHeight: 30
+      },
+      multiDrag: true,
+      maxHeight: 400,
+      minHeight: 400,
+      showCheckbox: true,
+      max: 0,
+      highlightCurrent: false,
+      indent: 20, // 缩进
+      // lazy: true,
+      dropable: true,
+      draggable: true,
+      onDrop: function (e, dragNode, dropNode, nodes) {
+        console.log(dragNode, dropNode, nodes)
+        // console.log(e.dataTransfer.getData('node'));
+        // window.e2=e;
+      },
+      ssearchFilter: function (keyword, node, data) {
+        if (typeof keyword === 'undefined' || keyword === '') return true
+        if (data._vsroot) return true
+        // console.log(keyword, node, data)
+        return true
+        // console.log(data);
+        // if (['1111','a2'].indexOf(data.id)===-1) return  false;
+        //   return [node];
+      },
+      click:function (e,node){
+        console.log(node);
+      },
+      contextmenu: function () {
+        // console.log('abc')
+      },
+      format: function (data) {
+        return {
+          id: data.id.toString(),
+          parentId: data.pid || 0,
+          name: data.title||data.name,
+          children: data.children,
+          isLeaf: !data.children
+        }
+      }
     })
-    data.data.areas.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.gisRegionName, pid: 'gisRegion_' + v.gisRegionId }))
-    });
-    data.data.fields.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.gisFieldName, pid: 'gisAreas_' + v.gisAreaOnlycode }))
-    });
-    data.data.bpns.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.bpnName, pid: 'gisFields_' + v.gisFieldOnlycode }))
-    });
 
-    data.data.lands.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.name, pid: 'gisFields_' + v.gisFieldOnlycode }))
-    });
-
-    data.data.pipes.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.name, pid: 'bpn_' + v.bpnOnlycode }))
-    });
-    data.data.risks.map(v => {
-      treeData.push(Object.assign({}, v, { title: v.name,pid: 'gisFields_' + v.gisFieldOnlycode }))
-    });
-    treeData=loop(treeData);
   });
   var id = 1000
 
@@ -80,52 +128,6 @@
 
   let searchData = {}
 
-  tree=new VsTree('#tree', {
-    data: data,
-    virtual: {
-      showCount: 25,
-      itemHeight: 100
-    },
-    multiDrag: true,
-    maxHeight: 400,
-    minHeight: 400,
-    showCheckbox: true,
-    max: 0,
-    highlightCurrent: false,
-    indent: 20, // 缩进
-    // lazy: true,
-    dropable: true,
-    draggable: true,
-    onDrop: function (e, dragNode, dropNode, nodes) {
-      console.log(dragNode, dropNode, nodes)
-      // console.log(e.dataTransfer.getData('node'));
-      // window.e2=e;
-    },
-    ssearchFilter: function (keyword, node, data) {
-      if (typeof keyword === 'undefined' || keyword === '') return true
-      if (data._vsroot) return true
-      // console.log(keyword, node, data)
-      return true
-      // console.log(data);
-      // if (['1111','a2'].indexOf(data.id)===-1) return  false;
-      //   return [node];
-    },
-    click:function (e,node){
-      console.log(node);
-    },
-    contextmenu: function () {
-      // console.log('abc')
-    },
-    format: function (data) {
-      return {
-        id: data.id.toString(),
-        parentId: data.pid || 0,
-        name: data.title,
-        children: data.children,
-        isLeaf: !data.children
-      }
-    }
-  })
 
   // document.getElementById('go').addEventListener('input', (e) => {
   //     tree.filter(e.target.value)

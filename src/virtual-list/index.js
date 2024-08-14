@@ -83,9 +83,11 @@ export default class Vlist {
       if (index === -1) return
       setTimeout(()=>{
         this.scrollToOffset(index * this.estimateSize);
-      },10);
+      },70);
     } else {
-      this.scrollToOffset(index * this.estimateSize)
+      setTimeout(()=>{
+        this.scrollToOffset(index * this.estimateSize)
+      },50);
     }
     return true
   }

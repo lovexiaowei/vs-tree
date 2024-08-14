@@ -260,7 +260,9 @@ export default class Tree {
   getCheckedNodes () {
     return this.store.getCheckedNodes()
   }
-
+  getSelectedNodes(){
+    return this.store.getSelectedNodes(true)
+  }
   save(){
 
   }

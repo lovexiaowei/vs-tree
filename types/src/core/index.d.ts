@@ -24,6 +24,7 @@ export default class Tree {
     unshift(data: any): void;
     getNodeById(id: any): any;
     getCheckedNodes(): any[];
+    getSelectedNodes(): any[];
     save(): void;
     restore(): void;
     setMaxValue(value?: number): void;

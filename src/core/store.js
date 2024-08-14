@@ -1,7 +1,6 @@
 import Node from './node.js'
 import Select from './select.js'
 
-
 export default class TreeStore {
   constructor (options) {
     for (const option in options) {
@@ -106,6 +105,14 @@ export default class TreeStore {
       count += this.getUnCheckLeafsCount(v)
     })
     return count
+  }
+
+  getSelectedNodes (filter) {
+    if (filter) {
+      return this.selectManager.getTrueDrag()
+    } else {
+      return this.selectManager.list
+    }
   }
 
   // 关联判断
