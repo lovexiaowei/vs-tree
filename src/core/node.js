@@ -141,6 +141,14 @@ export default class Node {
       passive: false
     })
 
+    dom.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      if (this.store.dblclick){
+        this.store.dblclick(e, this);
+      }
+    }, {
+      passive: false
+    })
     dom.addEventListener('contextmenu', (e) => {
       if (this.store.contextmenu && typeof this.store.contextmenu === 'function') {
         e.stopPropagation()
@@ -259,6 +267,11 @@ export default class Node {
       if (this.loading) return
       const expand = !dom.classList.contains('expanded')
       // dom.classList.toggle('expanded')
+      // if (!expand){
+      //   this.setExpandAll(expand)
+      // }else{
+      //   this.setExpand(expand)
+      // }
       this.setExpand(expand)
     }, {
       passive: false
@@ -544,6 +557,39 @@ export default class Node {
     this.checkboxEl && (this.checkboxEl.disabled = disabled)
   }
 
+  setExpandAll(expand,noUpdate){
+    this.expanded = expand
+    if (this.childNodes.length) {
+      this.childNodes.forEach(v => {
+        if (expand && this.expanded) {
+          v.visbile = true
+        } else {
+          v.visbile = false
+        }
+        v.setExpandAll(expand,noUpdate)
+      })
+    }
+
+    this.setAccordion(expand)
+
+    if (this.expandEl) {
+      if (expand) {
+        this.expandEl.classList.add('expanded')
+      } else {
+        this.expandEl.classList.remove('expanded')
+      }
+    }
+
+    if (this.store.lazy && !this.loaded) {
+      this.loadData((data) => {
+        if (data) {
+          !noUpdate && this.storeUpdate()
+        }
+      })
+    } else {
+      !noUpdate && this.storeUpdate()
+    }
+  }
   // 设置默认展开
   setExpand (expand, noUpdate) {
     // debugger;

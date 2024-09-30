@@ -44,6 +44,7 @@ export default class Node {
     updateRadioChecked(checked: any, isInitDefault: any): void;
     setChecked(checked: any, isInitDefault: any): void;
     setDisabled(disabled?: boolean): void;
+    setExpandAll(expand: any, noUpdate: any): void;
     setExpand(expand: any, noUpdate: any): void;
     storeUpdate(): void;
     createAnimation(): void;

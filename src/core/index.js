@@ -122,6 +122,7 @@ export default class Tree {
         disabledKeys: ops.disabledKeys || [],
         limitAlert: ops.limitAlert || noop,
         click: ops.click || noop,
+        dblclick: ops.dblclick || noop,
         check: ops.check || noop, // 复选框被点击时出发
         change: ops.change || noop,
         load: ops.load || noop,
@@ -203,7 +204,12 @@ export default class Tree {
         }
       })
     } else {
-      v.parent && (v.parent.requireExpand = true)
+      let tmp=v;
+      //这里修改过原来的业务，如果下级有搜索到的内容，那么所有的父级都要展开,原来是只展开父级
+      for (let i=0;i<10;i++){
+        if (tmp.level===0||!tmp) break;
+        tmp.parent && (tmp.parent.requireExpand = true)&&(tmp=tmp.parent);
+      }
     }
     return boo
   }
@@ -219,7 +225,7 @@ export default class Tree {
   // 过滤节点
   filter (keyword = '', onlySearchLeaf) {
     this.keyword = keyword
-
+    // debugger;
     this.store.onlySearchLeaf = onlySearchLeaf && !!keyword
     this.store.isSearch = !!keyword
     if (this.store.onlySearchLeaf) {
@@ -227,15 +233,30 @@ export default class Tree {
       this.vlist.update(data)
       return data
     }
+    this._render(false);
+    let abc;
+    let tmpData=this.data.map(v=>v);
 
-    this._render(false)
-    for (let i = 0, len = this.data.length; i < len; i++) {
-      const v = this.data[i]
+    for (let i = 0, len = tmpData.length; i < len; i++) {
+      const v = tmpData[i]
       if (v.requireExpand) {
+        // debugger;
+        // console.log(this.data[i]);
         v.requireExpand = false
-        v.setExpand(true, true)
+        // if (i===len-1){
+        //   // console.log(1);
+        //   abc=v;
+        // }else{
+        //
+        // }
+        // debugger;
+        // console.log(v.data.name);
+        // debugger;
+        // v.setExpand(true, true)
+        v.setExpandAll(true,true)
       }
     }
+    // abc.setExpand(true, false);
     this._render()
     return this.data
   }
