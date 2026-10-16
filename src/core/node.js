@@ -80,7 +80,8 @@ export default class Node {
       this.checkboxNode && (this.checkboxNode.checked = this.checked)
       this.radioNode && (this.radioNode.checked = this.checked)
       if (this.indeterminate) this.dom.classList.add('is-indeterminate')
-      if (this.dom.classList.contains('selected') && !this.store.selectManager.has(this)) {
+      const isCurrent = this.store.highlightCurrent && this.store.selectedCurrent === this
+      if (this.dom.classList.contains('selected') && !this.store.selectManager.has(this) && !isCurrent) {
         this.dom.classList.remove('selected')
       }
       return this.dom

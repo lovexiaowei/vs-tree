@@ -295,6 +295,12 @@ export default class Tree {
     this.store.max = value
   }
 
+  // 重新设置组件最大高度，不重建节点和已有状态
+  setHeight (height) {
+    this.maxHeight = height
+    this.vlist.setHeight(height)
+  }
+
   // 滚动到索引位置
   scrollToIndex (index = 0) {
     this.vlist.scrollToIndex(index)

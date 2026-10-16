@@ -28,6 +28,7 @@ export default class Tree {
     save(): void;
     restore(): void;
     setMaxValue(value?: number): void;
+    setHeight(height: number | string): void;
     scrollToIndex(index?: number): void;
     scrollToNode(node: any): void;
 }

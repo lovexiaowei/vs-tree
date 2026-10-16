@@ -192,7 +192,8 @@
           this.checkboxNode && (this.checkboxNode.checked = this.checked);
           this.radioNode && (this.radioNode.checked = this.checked);
           if (this.indeterminate) this.dom.classList.add('is-indeterminate');
-          if (this.dom.classList.contains('selected') && !this.store.selectManager.has(this)) {
+          var isCurrent = this.store.highlightCurrent && this.store.selectedCurrent === this;
+          if (this.dom.classList.contains('selected') && !this.store.selectManager.has(this) && !isCurrent) {
             this.dom.classList.remove('selected');
           }
           return this.dom;
@@ -1558,6 +1559,26 @@
         }
       }
 
+      // update the amount of rendered items without resetting scroll or node state
+    }, {
+      key: "updateKeeps",
+      value: function updateKeeps(keeps) {
+        this.updateParam('keeps', keeps);
+        this.updateParam('buffer', Math.round(keeps / 3));
+        var start = this.range.start;
+        var end = this.getEndByStart(start);
+        var total = this.param.uniqueIds.length;
+        if (total <= keeps) {
+          start = 0;
+          end = this.getLastIndex();
+        } else if (end - start < keeps - 1) {
+          start = Math.max(end - keeps + 1, 0);
+        }
+
+        // keeps may change while start stays the same, so force a range update
+        this.updateRange(start, end);
+      }
+
       // in some special situation (e.g. length change) we need to update in a row
       // try goiong to render next range by a leading buffer according to current direction
     }, {
@@ -1786,6 +1807,7 @@
         passive: false
       });
       this.keeps = opts.keeps || 20;
+      this.defaultKeeps = this.keeps;
       this.estimateSize = opts.estimateSize || 26;
       this.dataKey = 'id';
       this.installVirtual();
@@ -1895,6 +1917,31 @@
           if (!root) return;
           root.scrollTop = offset;
         }
+      }
+
+      // update max height without rebuilding the virtual list or its node state
+    }, {
+      key: "setHeight",
+      value: function setHeight(height) {
+        if (typeof height !== 'number' && typeof height !== 'string') {
+          throw new TypeError('height must be a number or string');
+        }
+        var offset = this.getOffset();
+        this.$el.style.maxHeight = typeof height === 'number' ? height + 'px' : height;
+
+        // Ensure an enlarged viewport always has enough rendered rows.
+        var visibleCount = Math.ceil(this.getClientSize() / this.estimateSize);
+        var buffer = Math.max(Math.ceil(visibleCount / 3), 1);
+        var keeps = Math.max(this.defaultKeeps, visibleCount + buffer);
+        if (keeps !== this.keeps) {
+          this.keeps = keeps;
+          this.virtual.updateKeeps(keeps);
+        }
+
+        // Keep the previous position where possible. The browser may clamp it when
+        // the enlarged viewport is close to the bottom, so sync the final offset.
+        this.scrollToOffset(offset);
+        this.virtual.handleScroll(this.getOffset());
       }
 
       // reset all state back to initial
@@ -2480,6 +2527,14 @@
       value: function setMaxValue() {
         var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
         this.store.max = value;
+      }
+
+      // 重新设置组件最大高度，不重建节点和已有状态
+    }, {
+      key: "setHeight",
+      value: function setHeight(height) {
+        this.maxHeight = height;
+        this.vlist.setHeight(height);
       }
 
       // 滚动到索引位置

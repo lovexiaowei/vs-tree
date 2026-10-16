@@ -5,6 +5,7 @@ export default class Vlist {
     dataSources: any;
     wrapper: HTMLDivElement;
     keeps: any;
+    defaultKeeps: any;
     estimateSize: any;
     dataKey: string;
     getOffset(): number;
@@ -14,6 +15,7 @@ export default class Vlist {
     scrollToNode(node: any): true | undefined;
     scrollToBottom(): void;
     scrollToOffset(offset: any): void;
+    setHeight(height: number | string): void;
     reset(): void;
     installVirtual(): void;
     virtual: Virtual | undefined;

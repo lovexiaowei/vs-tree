@@ -25,6 +25,7 @@ export default class Vlist {
     })
 
     this.keeps = opts.keeps || 20
+    this.defaultKeeps = this.keeps
 
     this.estimateSize = opts.estimateSize || 26
 
@@ -117,6 +118,31 @@ export default class Vlist {
       if (!root) return
       root.scrollTop = offset
     }
+  }
+
+  // update max height without rebuilding the virtual list or its node state
+  setHeight (height) {
+    if (typeof height !== 'number' && typeof height !== 'string') {
+      throw new TypeError('height must be a number or string')
+    }
+
+    const offset = this.getOffset()
+    this.$el.style.maxHeight = typeof height === 'number' ? height + 'px' : height
+
+    // Ensure an enlarged viewport always has enough rendered rows.
+    const visibleCount = Math.ceil(this.getClientSize() / this.estimateSize)
+    const buffer = Math.max(Math.ceil(visibleCount / 3), 1)
+    const keeps = Math.max(this.defaultKeeps, visibleCount + buffer)
+
+    if (keeps !== this.keeps) {
+      this.keeps = keeps
+      this.virtual.updateKeeps(keeps)
+    }
+
+    // Keep the previous position where possible. The browser may clamp it when
+    // the enlarged viewport is close to the bottom, so sync the final offset.
+    this.scrollToOffset(offset)
+    this.virtual.handleScroll(this.getOffset())
   }
 
   // reset all state back to initial

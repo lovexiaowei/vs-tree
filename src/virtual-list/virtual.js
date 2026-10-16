@@ -87,6 +87,26 @@ export default class Virtual {
     }
   }
 
+  // update the amount of rendered items without resetting scroll or node state
+  updateKeeps (keeps) {
+    this.updateParam('keeps', keeps)
+    this.updateParam('buffer', Math.round(keeps / 3))
+
+    let start = this.range.start
+    let end = this.getEndByStart(start)
+    const total = this.param.uniqueIds.length
+
+    if (total <= keeps) {
+      start = 0
+      end = this.getLastIndex()
+    } else if (end - start < keeps - 1) {
+      start = Math.max(end - keeps + 1, 0)
+    }
+
+    // keeps may change while start stays the same, so force a range update
+    this.updateRange(start, end)
+  }
+
   // in some special situation (e.g. length change) we need to update in a row
   // try goiong to render next range by a leading buffer according to current direction
   handleDataSourcesChange () {

@@ -18,6 +18,7 @@ export default class Virtual {
     isFront(): boolean;
     getOffset(start: any): any;
     updateParam(key: any, value: any): void;
+    updateKeeps(keeps: any): void;
     handleDataSourcesChange(): void;
     handleSlotSizeChange(): void;
     handleScroll(offset: any): void;
