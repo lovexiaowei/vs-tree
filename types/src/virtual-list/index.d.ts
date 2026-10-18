@@ -15,7 +15,7 @@ export default class Vlist {
     scrollToNode(node: any): true | undefined;
     scrollToBottom(): void;
     scrollToOffset(offset: any): void;
-    setHeight(height: number | string): void;
+    setHeight(height: any): void;
     reset(): void;
     installVirtual(): void;
     virtual: Virtual | undefined;
