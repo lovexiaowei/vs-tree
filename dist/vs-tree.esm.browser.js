@@ -1,5 +1,3 @@
-
-(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
 function _arrayLikeToArray(r, a) {
   (null == a || a > r.length) && (a = r.length);
   for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
@@ -92,6 +90,7 @@ var parseTemplate = function parseTemplate(name, ctx) {
     slotName.text.replace(slotName.interpolate, function (a, b) {
       prefix += "_.__buffer['".concat(a, "'] = ").concat(b, ";");
     });
+
     // eslint-disable-next-line no-new-func
     var render = new Function('_', prefix);
     render.call(ctx, ctx);
@@ -136,7 +135,7 @@ var Node = /*#__PURE__*/function () {
       if (_typeof(_data) !== 'object') {
         throw new Error('format must return object! \nformat: function(data) {\n  return {id, name, children, isLeaf}\n}');
       }
-      var props = ['id', 'name', 'children', 'isLeaf', 'icon', 'extra'];
+      var props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'extra'];
       for (var i = 0, len = props.length; i < len; i++) {
         if (Object.prototype.hasOwnProperty.call(_data, props[i])) {
           this.data[props[i]] = _data[props[i]];
@@ -476,7 +475,10 @@ var Node = /*#__PURE__*/function () {
     value: function createIcon() {
       var icon = document.createElement('span');
       icon.className = this.isLeaf && !this.childNodes.length ? 'vs-icon-leaf' : 'vs-icon-parent';
-      if (this.data.icon) {
+      if (typeof this.data.iconSrc === 'string' && this.data.iconSrc.trim()) {
+        icon.style.backgroundImage = 'url(' + JSON.stringify(this.data.iconSrc.trim()) + ')';
+        icon.style.backgroundSize = 'contain';
+      } else if (this.data.icon) {
         if (this.data.icon instanceof HTMLElement) {
           icon.style.backgroundImage = 'none';
           icon.appendChild(this.data.icon);
@@ -1043,7 +1045,7 @@ var Node = /*#__PURE__*/function () {
   }, {
     key: "loadData",
     value: function loadData(callback) {
-      var _this10 = this;
+      var _this0 = this;
       if (this.loading) return;
       this.loading = true;
       if (this.expandEl) {
@@ -1053,25 +1055,25 @@ var Node = /*#__PURE__*/function () {
       }
       var resolve = function resolve() {
         var children = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-        _this10.loaded = true;
-        _this10.loading = false;
-        if (_this10.expandEl) {
-          _this10.expandEl.classList.remove('is-loading');
-        } else if (_this10.loadingEl) {
-          _this10.loadingEl.classList.remove('is-loading');
+        _this0.loaded = true;
+        _this0.loading = false;
+        if (_this0.expandEl) {
+          _this0.expandEl.classList.remove('is-loading');
+        } else if (_this0.loadingEl) {
+          _this0.loadingEl.classList.remove('is-loading');
         }
         if (children.length) {
           children.forEach(function (data) {
-            _this10.insertChild({
+            _this0.insertChild({
               data: data,
-              store: _this10.store
+              store: _this0.store
             });
           });
-          _this10.childNodes[0].updateCheckedParent();
-          _this10.store.updateNodes();
+          _this0.childNodes[0].updateCheckedParent();
+          _this0.store.updateNodes();
         }
         if (callback) {
-          callback.call(_this10, children);
+          callback.call(_this0, children);
         }
       };
       this.store.load(this, resolve);
@@ -1081,12 +1083,12 @@ var Node = /*#__PURE__*/function () {
   }, {
     key: "remove",
     value: function remove() {
-      var _this11 = this;
+      var _this1 = this;
       var parent = this.parent;
       if (!parent) return;
       var children = parent.childNodes || [];
       var index = children.findIndex(function (d) {
-        return d.id === _this11.id;
+        return d.id === _this1.id;
       });
       if (index > -1) {
         this.store.dataMap.delete(this.data.id);
@@ -1096,7 +1098,7 @@ var Node = /*#__PURE__*/function () {
       if (data && data.children) {
         // console.log(data.children,this.data,this.id);
         var childIndex = data.children.findIndex(function (v) {
-          return v.id === _this11.data.id;
+          return v.id === _this1.data.id;
         });
         if (childIndex > -1) {
           data.children.splice(childIndex, 1);

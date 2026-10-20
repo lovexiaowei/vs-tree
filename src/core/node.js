@@ -30,7 +30,7 @@ export default class Node {
       if (typeof _data !== 'object') {
         throw new Error('format must return object! \nformat: function(data) {\n  return {id, name, children, isLeaf}\n}')
       }
-      const props = ['id', 'name', 'children', 'isLeaf', 'icon', 'extra']
+      const props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'extra']
       for (let i = 0, len = props.length; i < len; i++) {
         if (Object.prototype.hasOwnProperty.call(_data, props[i])) {
           this.data[props[i]] = _data[props[i]]
@@ -368,7 +368,10 @@ export default class Node {
   createIcon () {
     const icon = document.createElement('span')
     icon.className = (this.isLeaf && !this.childNodes.length) ? 'vs-icon-leaf' : 'vs-icon-parent'
-    if (this.data.icon) {
+    if (typeof this.data.iconSrc === 'string' && this.data.iconSrc.trim()) {
+      icon.style.backgroundImage = 'url(' + JSON.stringify(this.data.iconSrc.trim()) + ')'
+      icon.style.backgroundSize = 'contain'
+    } else if (this.data.icon) {
       if (this.data.icon instanceof HTMLElement) {
         icon.style.backgroundImage = 'none'
         icon.appendChild(this.data.icon)
