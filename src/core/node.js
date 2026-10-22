@@ -30,7 +30,7 @@ export default class Node {
       if (typeof _data !== 'object') {
         throw new Error('format must return object! \nformat: function(data) {\n  return {id, name, children, isLeaf}\n}')
       }
-      const props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'extra']
+      const props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'showCheckbox', 'extra']
       for (let i = 0, len = props.length; i < len; i++) {
         if (Object.prototype.hasOwnProperty.call(_data, props[i])) {
           this.data[props[i]] = _data[props[i]]
@@ -124,7 +124,9 @@ export default class Node {
       } else {
         this.store.selectManager.clear()
       }
-      if (this.store.checkOnClickNode && !this.disabled && !(this.store.breadcrumb && !this.isLeaf)) {
+      if (this.store.checkOnClickNode && !this.disabled
+        && !(this.store.showCheckbox && !this.store.showRadio && this.data.showCheckbox === false)
+        && !(this.store.breadcrumb && !this.isLeaf)) {
         this.handleCheckChange({
           target: { checked: !this.checked }
         })
@@ -199,7 +201,7 @@ export default class Node {
       dom.appendChild(this.loadingEl)
     }
 
-    if (this.store.showCheckbox || this.store.showRadio) {
+    if (this.store.showRadio || (this.store.showCheckbox && this.data.showCheckbox !== false)) {
       if ((!this.store.nocheckParent) || (this.isLeaf && !this.childNodes.length)) {
         dom.appendChild(this.createCheckbox())
       }

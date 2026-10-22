@@ -135,7 +135,7 @@ var Node = /*#__PURE__*/function () {
       if (_typeof(_data) !== 'object') {
         throw new Error('format must return object! \nformat: function(data) {\n  return {id, name, children, isLeaf}\n}');
       }
-      var props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'extra'];
+      var props = ['id', 'name', 'children', 'isLeaf', 'icon', 'iconSrc', 'showCheckbox', 'extra'];
       for (var i = 0, len = props.length; i < len; i++) {
         if (Object.prototype.hasOwnProperty.call(_data, props[i])) {
           this.data[props[i]] = _data[props[i]];
@@ -226,7 +226,7 @@ var Node = /*#__PURE__*/function () {
         } else {
           _this.store.selectManager.clear();
         }
-        if (_this.store.checkOnClickNode && !_this.disabled && !(_this.store.breadcrumb && !_this.isLeaf)) {
+        if (_this.store.checkOnClickNode && !_this.disabled && !(_this.store.showCheckbox && !_this.store.showRadio && _this.data.showCheckbox === false) && !(_this.store.breadcrumb && !_this.isLeaf)) {
           _this.handleCheckChange({
             target: {
               checked: !_this.checked
@@ -296,7 +296,7 @@ var Node = /*#__PURE__*/function () {
         this.loadingEl.className = 'vs-loading-unit';
         dom.appendChild(this.loadingEl);
       }
-      if (this.store.showCheckbox || this.store.showRadio) {
+      if (this.store.showRadio || this.store.showCheckbox && this.data.showCheckbox !== false) {
         if (!this.store.nocheckParent || this.isLeaf && !this.childNodes.length) {
           dom.appendChild(this.createCheckbox());
         }
